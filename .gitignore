@@ -1,0 +1,8 @@
+.env
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+app/__pycache__/__init__.cpython-311.pyc
