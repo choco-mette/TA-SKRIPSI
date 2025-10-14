@@ -1,7 +1,6 @@
 # STRUKTUR FOLDER
+
 rag_backend/
-
-
 │ 
 ├── app/
 │   ├── __init__.py
@@ -37,7 +36,6 @@ rag_backend/
 │   │   │   ├── __init__.py
 │   │   │   ├── crud_user.py
 │   │   │   ├── crud_chat.py
-│   │   │   ├── crud_knowledge.py
 │   │   │   └── crud_response.py
 │   │   └── database.py              # engine, session local, Base import
 │   │
@@ -83,4 +81,4 @@ rag_backend/
 ├── .env                             # Environment variable (DB_URL, API_KEY, MODEL_PATH)
 ├── requirements.txt                 # Daftar library
 ├── README.md
-└── run.sh                           # Script startup otomatis (uvicorn + setup db)
+└── run.sh                           # Script startup otomatis (start uvicorn) 
