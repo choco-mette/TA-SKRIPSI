@@ -48,11 +48,6 @@ rag_backend/
 │   │   ├── llm_ollama.py            # Interface LLM DeepSeek (Ollama)
 │   │   └── rag_service.py           # Endpoint-level service untuk query user
 │   │
-│   ├── sentiment/                   # Modul analisis sentimen IndoBERTweet
-│   │   ├── __init__.py
-│   │   ├── model_loader.py          # Load IndoBERTweet model & tokenizer
-│   │   ├── predict_sentiment.py     # Fungsi analisis teks (positive/neutral/negative)
-│   │   └── utils.py                 # Preprocessing teks (regex, stopword, dsb)
 │   │
 │   ├── schemas/                     # Pydantic schema (validasi request/response)
 │   │   ├── __init__.py
@@ -69,9 +64,6 @@ rag_backend/
 ├── data/
 │   ├── documents/                   # PDF/txt sebelum diembedding
 │   └── embeddings/                  # Cache embedding lokal (opsional)
-│
-├── models/                          # Model ter-train (jika disimpan lokal)
-│   └── indobertweet/                # Folder IndoBERTweet (tokenizer + config)
 │
 ├── tests/
 │   ├── test_api.py
