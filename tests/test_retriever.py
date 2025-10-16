@@ -9,7 +9,7 @@ if sys.platform.startswith("win"):
 from app.rag.retriever_service import retrieve_context
 
 if __name__ == "__main__":
-    query = "apa itu depresi?"
+    query = "Bagaimana cara mengatasi stres?"
     results = retrieve_context(query, top_k=5)
 
     print("\n[RESULTS]")
