@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Mental_Health_Chatbot",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

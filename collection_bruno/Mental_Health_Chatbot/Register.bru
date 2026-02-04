@@ -1,0 +1,26 @@
+meta {
+  name: Register
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{server}}/api/v1/auth/register
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "username": "budisusanto",
+    "email": "budisusanto@gmail.com",
+    "full_name": "budisusanto",
+    "date_of_birth": "2026-02-04",
+    "password": "12345678"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
