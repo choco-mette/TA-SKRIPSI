@@ -2,7 +2,6 @@
 
 # Import semua modul di core
 from .config import *
-from .logger import *
 from .security import *
 
 # Tentukan modul yang diekspos saat import *

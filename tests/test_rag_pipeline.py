@@ -5,13 +5,13 @@ import os
 import sys
 import time
 from datetime import datetime
+from app.rag.rag_service import rag_chat
+from app.rag.retriever_service import retrieve_context
 
 # Fix event loop policy untuk Windows (psycopg async)
 if sys.platform.startswith("win"):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-from app.rag.rag_service import rag_chat
-from app.rag.retriever_service import retrieve_context
 
 # === Konfigurasi Logging === #
 os.makedirs("logs", exist_ok=True)
