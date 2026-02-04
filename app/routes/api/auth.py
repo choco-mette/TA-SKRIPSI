@@ -2,9 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.core.dependencies import get_current_user
 from app.schemas.auth import LoginRequest
-from app.schemas.user import UserCreate
+from app.schemas.user import UserCreate, UserResponse
 from app.services.auth_service import AuthService
+from app.models.models import User
 
 router = APIRouter()
 
@@ -49,12 +51,9 @@ def login(
         "token_type": "bearer"
     }
 
-
-@router.get("/me")
-def get_current_user_profile(
-    current_user: dict = Depends(AuthService.get_current_user)
-):
+@router.get("/me", response_model=UserResponse)
+def get_me(current_user: User = Depends(get_current_user)):
     """
-    Mengambil data user yang sedang login
+    Get current logged in user
     """
     return current_user
