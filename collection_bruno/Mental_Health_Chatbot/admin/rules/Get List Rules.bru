@@ -1,0 +1,20 @@
+meta {
+  name: Get List Rules
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{server}}/api/v1/admin/rules/
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

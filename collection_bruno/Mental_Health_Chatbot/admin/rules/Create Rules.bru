@@ -1,0 +1,27 @@
+meta {
+  name: Create Rules
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{server}}/api/v1/admin/rules/
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+  "content": "ini test",
+  "is_active": true
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
