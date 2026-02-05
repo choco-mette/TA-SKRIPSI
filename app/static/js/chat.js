@@ -200,7 +200,10 @@ function appendMessage(msg) {
     // Backend returns 'llm' or 'user' in 'sender' field
     const isBot = msg.sender === 'llm'; 
     const alignClass = isBot ? 'chat-start' : 'chat-end';
-    const bubbleColor = isBot ? 'chat-bubble-secondary' : 'chat-bubble-primary';
+    
+    // UI Change: Use 'chat-bubble-ai' (Custom Soft Gray) for Bot, 'chat-bubble-primary' (Green) for User
+    // Note: 'chat-bubble-ai' is defined in base.html styles
+    const bubbleColor = isBot ? 'chat-bubble-ai' : 'chat-bubble-primary';
     
     // Determine Avatar URL
     let avatarUrl;
@@ -312,7 +315,7 @@ async function sendMessage(event) {
                          <img src="/static/images/bot-avatar.png" onerror="this.src='https://ui-avatars.com/api/?name=AI&background=10b981&color=fff'" />
                     </div>
                 </div>
-                <div class="chat-bubble chat-bubble-secondary">
+                <div class="chat-bubble chat-bubble-ai">
                     <span class="loading loading-dots loading-sm"></span>
                 </div>
             </div>
