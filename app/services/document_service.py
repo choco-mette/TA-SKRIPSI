@@ -10,8 +10,11 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from app.models.models import Document, BaseKnowledge, User
 from app.repositories.document_repo import DocumentRepository, BaseKnowledgeRepository
 from app.services.embedding_service import EmbeddingConfigService
+from app.utils.text_cleaner import TextCleaner
 
-UPLOAD_DIR = "/var/www/Backend-AI/app/static/doc"
+# Setup Upload Directory relative to this file
+BASE_APP_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+UPLOAD_DIR = os.path.join(BASE_APP_DIR, "static", "doc")
 
 class DocumentService:
     def __init__(self, db: Session):
@@ -59,6 +62,10 @@ class DocumentService:
         # A. Load Document
         loader = PyPDFLoader(document.file_path)
         raw_docs = loader.load()
+
+        # A.1 Clean Text per Page
+        for doc in raw_docs:
+            doc.page_content = TextCleaner.clean_text(doc.page_content)
 
         # B. Split Text
         text_splitter = RecursiveCharacterTextSplitter(
