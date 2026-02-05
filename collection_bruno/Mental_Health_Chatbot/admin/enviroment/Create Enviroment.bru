@@ -1,0 +1,30 @@
+meta {
+  name: Create Enviroment
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{server}}/api/v1/admin/environments/
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "models_name": "deepseek-reasoner",
+    "api_key": "{{api_deepseek}}",
+    "base_url": "{{deepseek}}",
+    "model_type": "chat",
+    "is_active": true
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

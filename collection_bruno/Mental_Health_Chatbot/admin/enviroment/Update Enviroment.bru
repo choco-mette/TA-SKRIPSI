@@ -1,0 +1,26 @@
+meta {
+  name: Update Enviroment
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{server}}/api/v1/admin/environments/1
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "model_type": "embedding"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
