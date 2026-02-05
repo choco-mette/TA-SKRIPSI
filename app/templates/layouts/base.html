@@ -12,6 +12,9 @@
     <!-- Custom Font: Google Fonts (Inter) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -25,15 +28,23 @@
             background-color: #f3f4f6;
             color: #374151;
         }
+
+        /* Fix SweetAlert2 Buttons Visibility vs Tailwind Preflight */
+        .swal2-styled.swal2-confirm {
+            background-color: #d33 !important;
+            color: white !important;
+        }
+        .swal2-styled.swal2-cancel {
+            background-color: #6e7881 !important;
+            color: white !important;
+        }
+        .swal2-styled:hover {
+            opacity: 0.9 !important;
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body class="h-screen overflow-hidden flex flex-col">
-
-    <!-- Flash Messages (Toast) -->
-    <div id="toast-container" class="toast toast-top toast-end z-50">
-        <!-- Javascript will inject toasts here -->
-    </div>
 
     <!-- Main Content -->
     <main class="flex-grow flex flex-col h-full overflow-hidden">
@@ -44,25 +55,24 @@
 
     <!-- Global Scripts -->
     <script>
-        // Simple Toast Notification Helper
+        // SweetAlert2 Toast Notification Helper
         function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            
-            let alertClass = 'alert-info';
-            if (type === 'success') alertClass = 'alert-success';
-            if (type === 'error') alertClass = 'alert-error';
-            if (type === 'warning') alertClass = 'alert-warning';
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
 
-            toast.className = `alert ${alertClass} shadow-lg mb-2`;
-            toast.innerHTML = `<span>${message}</span>`;
-            
-            container.appendChild(toast);
-            
-            // Auto remove after 3 seconds
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
+            Toast.fire({
+                icon: type,
+                title: message
+            });
         }
     </script>
     {% block extra_js %}{% endblock %}
