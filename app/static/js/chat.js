@@ -357,3 +357,10 @@ function scrollToBottom() {
     const container = document.getElementById('chat-messages');
     if(container) container.scrollTop = container.scrollHeight;
 }
+
+function toggleSidebar() {
+    const drawer = document.getElementById('main-drawer');
+    if (drawer) {
+        drawer.classList.toggle('lg:drawer-open');
+    }
+}
