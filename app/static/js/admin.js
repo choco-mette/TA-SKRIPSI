@@ -179,7 +179,17 @@ async function saveRule(e) {
 }
 
 async function deleteRule(id) {
-    if(!confirm('Are you sure?')) return;
+    const result = await Swal.fire({
+        title: 'Delete Rule?',
+        text: "This action cannot be undone.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    });
+    
+    if (!result.isConfirmed) return;
+
     const res = await apiCall(`/admin/rules/${id}`, 'DELETE');
     if (res && (res.ok || res.status === 204)) {
         showToast('Rule deleted', 'success');
@@ -309,7 +319,17 @@ async function saveEnv(e) {
 }
 
 async function deleteEnv(id) {
-    if(!confirm('Delete this environment?')) return;
+    const result = await Swal.fire({
+        title: 'Delete Environment?',
+        text: "This variable will be permanently removed.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (!result.isConfirmed) return;
+
     const res = await apiCall(`/admin/environments/${id}`, 'DELETE');
     if(res && (res.ok || res.status === 204)) {
         loadEnvs();
@@ -384,7 +404,17 @@ async function uploadDocument(e) {
 }
 
 async function deleteDoc(id) {
-     if(!confirm('Delete this document? Embeddings will also be removed.')) return;
+     const result = await Swal.fire({
+        title: 'Delete Document?',
+        text: "Embeddings will also be removed. This cannot be undone.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+     });
+
+     if (!result.isConfirmed) return;
+
       const res = await apiCall(`/admin/documents/${id}`, 'DELETE');
       if (res && res.ok) {
           showToast('Document deleted', 'success');
