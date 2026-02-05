@@ -66,9 +66,7 @@ class BaseKnowledge(Base):
     langchain_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     doc_id = Column(Integer, ForeignKey("document.id"))
     content = Column(Text)
-    # Note: Vector dimension needs to be specified if strictly enforcing schema, 
-    # e.g., Vector(384) for MiniLM. Leaving generic based on ERD.
-    embedding = Column(Vector) 
+    embedding = Column(Vector(3072)) 
     langchain_metadata = Column(JSON)
 
     document = relationship("Document", back_populates="base_knowledges")
