@@ -1,0 +1,26 @@
+meta {
+  name: Sending Chat Message
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{server}}/api/v1/conversations/{{conversation_id}}/messages
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{user_token}}
+}
+
+body:json {
+  {
+    "message": "halo kamu siapa?"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

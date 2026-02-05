@@ -1,0 +1,15 @@
+meta {
+  name: Get Conversation
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{server}}/api/v1/conversations/
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

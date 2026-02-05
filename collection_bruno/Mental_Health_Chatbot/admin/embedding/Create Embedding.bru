@@ -1,0 +1,28 @@
+meta {
+  name: Create Embedding
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{server}}/api/v1/admin/documents/
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {}
+}
+
+body:multipart-form {
+  file: @file(/run/user/1000/doc/4ea85187/Apa itu depresi.pdf)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
