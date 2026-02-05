@@ -11,10 +11,13 @@ class ConversationService:
         self.repo = ConversationRepository(db)
         self.rag = RAGPipeline(db)
 
-    def create_conversation(self, current_user: User) -> Conversation:
+    def create_conversation(self, current_user: User, title: str = None) -> Conversation:
+        if not title:
+            title = f"Chat {current_user.username}"
+            
         new_conv = Conversation(
             user_id=current_user.id,
-            title=f"Chat {current_user.username}" # Default title, can be updated later
+            title=title
         )
         return self.repo.create_conversation(new_conv)
 
@@ -33,6 +36,11 @@ class ConversationService:
         # Validate ownership first
         self.get_conversation_details(conversation_id, current_user)
         return self.repo.get_messages(conversation_id)
+
+    def delete_conversation(self, conversation_id: UUID, current_user: User):
+        # Validate ownership
+        self.get_conversation_details(conversation_id, current_user)
+        return self.repo.delete_conversation(conversation_id)
 
     async def send_message(self, conversation_id: UUID, message_text: str, current_user: User):
         # 1. Validate Conversation

@@ -5,7 +5,7 @@ from uuid import UUID
 
 from app.core.database import get_db
 from app.core.dependencies import get_current_user
-from app.schemas.conversation import ConversationResponse, MessageResponse, ChatRequest, ChatResponse
+from app.schemas.conversation import ConversationResponse, MessageResponse, ChatRequest, ChatResponse, ConversationCreate
 from app.services.conversation_service import ConversationService
 from app.models.models import User
 
@@ -13,11 +13,13 @@ router = APIRouter()
 
 @router.post("/", response_model=ConversationResponse, status_code=status.HTTP_201_CREATED)
 def create_conversation(
+    data: ConversationCreate = None, # Make it optional for backward compatibility if needed, or default
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     service = ConversationService(db)
-    return service.create_conversation(current_user)
+    title = data.title if data else None
+    return service.create_conversation(current_user, title)
 
 @router.get("/", response_model=List[ConversationResponse])
 def get_conversations(
@@ -37,6 +39,18 @@ def get_conversation_detail(
 ):
     service = ConversationService(db)
     return service.get_conversation_details(conversation_id, current_user)
+
+@router.delete("/{conversation_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_conversation(
+    conversation_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    service = ConversationService(db)
+    success = service.delete_conversation(conversation_id, current_user)
+    if not success:
+        raise HTTPException(status_code=404, detail="Conversation could not be deleted")
+    return None
 
 @router.get("/{conversation_id}/messages", response_model=List[MessageResponse])
 def get_raw_messages(

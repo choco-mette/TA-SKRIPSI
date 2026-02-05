@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 from uuid import UUID
 
@@ -18,6 +18,9 @@ class ConversationResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class ConversationCreate(BaseModel):
+    title: Optional[str] = None
 
 class ChatRequest(BaseModel):
     message: str

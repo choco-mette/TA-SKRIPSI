@@ -78,8 +78,11 @@ async function loadConversations() {
         }
 
         conversations.forEach(conv => {
+            const container = document.createElement('div');
+            container.className = 'flex items-center w-full group';
+
             const btn = document.createElement('button');
-            btn.className = 'btn btn-ghost btn-sm w-full justify-start font-normal truncate';
+            btn.className = 'btn btn-ghost btn-sm flex-1 justify-start font-normal truncate';
             btn.onclick = () => loadChat(conv.id);
             btn.id = `conv-${conv.id}`;
             btn.innerHTML = `
@@ -88,18 +91,68 @@ async function loadConversations() {
                 </svg>
                 <span class="truncate">${conv.title || 'Conversation ' + conv.id.slice(0,4)}</span>
             `;
-            listEl.appendChild(btn);
+
+            const delBtn = document.createElement('button');
+            delBtn.className = 'btn btn-ghost btn-xs btn-square opacity-0 group-hover:opacity-100 transition-opacity ml-1 text-error';
+            delBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                    <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 0 0 1.5.06l.3-7.5Z" clip-rule="evenodd" />
+                </svg>
+            `;
+            delBtn.onclick = (e) => {
+                e.stopPropagation();
+                if(confirm('Are you sure you want to delete this conversation?')) {
+                    deleteConversation(conv.id);
+                }
+            };
+
+            container.appendChild(btn);
+            container.appendChild(delBtn);
+            listEl.appendChild(container);
         });
     }
 }
 
-async function startNewChat() {
-    const res = await apiCall('/conversations', 'POST');
+async function deleteConversation(id) {
+    const res = await apiCall(`/conversations/${id}`, 'DELETE');
     if (res && res.ok) {
-        const newConv = await res.json();
+        showToast('Conversation deleted', 'success');
+        if (currentConversationId === id) {
+            startNewChat();
+        }
         await loadConversations();
-        loadChat(newConv.id);
+    } else {
+        showToast('Failed to delete conversation', 'error');
     }
+}
+
+function startNewChat() {
+    currentConversationId = null;
+    
+    // Update URL to /chat
+    history.pushState({}, '', '/chat');
+
+    // Reset Sidebar Selection
+    const allBtns = document.querySelectorAll('#conversation-list button');
+    allBtns.forEach(b => b.classList.remove('btn-active'));
+
+    // Reset Main View
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const messagesContainer = document.getElementById('chat-messages');
+
+    // Show welcome screen initially, hide messages
+    if (welcomeScreen) welcomeScreen.classList.remove('hidden');
+    if (messagesContainer) messagesContainer.innerHTML = '';
+    
+    // Enable Input for new conversation
+    const input = document.getElementById('message-input');
+    const btn = document.getElementById('send-btn');
+    if (input) {
+        input.disabled = false;
+        input.value = '';
+        input.focus();
+    }
+    if (btn) btn.disabled = false;
 }
 
 // --- Chat Logic ---
@@ -187,49 +240,91 @@ function appendMessage(msg) {
     container.insertAdjacentHTML('beforeend', html);
 }
 
+function setChatState(isLoading) {
+    const input = document.getElementById('message-input');
+    const sendBtn = document.getElementById('send-btn');
+    
+    if (input) {
+        input.disabled = isLoading;
+        if (!isLoading) input.focus();
+    }
+    if (sendBtn) {
+        sendBtn.disabled = isLoading;
+        sendBtn.classList.toggle('opacity-50', isLoading);
+        sendBtn.classList.toggle('cursor-not-allowed', isLoading);
+    }
+}
+
 async function sendMessage(event) {
     event.preventDefault();
     const input = document.getElementById('message-input');
     const content = input.value.trim();
     
-    if (!content || !currentConversationId) return;
+    if (!content) return;
 
-    // UI Optimistic Update (Use backend format)
-    appendMessage({ sender: 'user', message: content });
-    input.value = '';
-    scrollToBottom();
-
-    // Show loading indicator
-    const loadingId = 'loading-' + Date.now();
-    const container = document.getElementById('chat-messages');
-    container.insertAdjacentHTML('beforeend', `
-        <div id="${loadingId}" class="chat chat-start">
-            <div class="chat-image avatar">
-                <div class="w-10 rounded-full">
-                     <img src="https://ui-avatars.com/api/?name=AI&background=10b981&color=fff" />
-                </div>
-            </div>
-            <div class="chat-bubble chat-bubble-secondary">
-                <span class="loading loading-dots loading-sm"></span>
-            </div>
-        </div>
-    `);
-    scrollToBottom();
+    // Lock Interface
+    setChatState(true);
+    let loadingId = null;
 
     try {
+        // --- Lazy Conversation Creation ---
+        if (!currentConversationId) {
+            // Generate title from first 30 chars
+            let title = content.substring(0, 30);
+            if (content.length > 30) title += '...';
+
+            const res = await apiCall('/conversations', 'POST', { title: title });
+            if (res && res.ok) {
+                const newConv = await res.json();
+                currentConversationId = newConv.id;
+                
+                // Update URL
+                history.pushState({conversationId: currentConversationId}, '', `/chat/${currentConversationId}`);
+
+                // Load Sidebar
+                await loadConversations();
+                
+                // Highlight new chat in sidebar
+                const activeBtn = document.getElementById(`conv-${currentConversationId}`);
+                if (activeBtn) activeBtn.classList.add('btn-active');
+
+                // Hide Welcome Screen
+                const welcomeScreen = document.getElementById('welcome-screen');
+                if (welcomeScreen) welcomeScreen.classList.add('hidden');
+            } else {
+                showToast('Failed to create conversation', 'error');
+                return;
+            }
+        }
+
+        // UI Optimistic Update (Use backend format)
+        appendMessage({ sender: 'user', message: content });
+        input.value = '';
+        scrollToBottom();
+
+        // Show loading indicator
+        loadingId = 'loading-' + Date.now();
+        const container = document.getElementById('chat-messages');
+        container.insertAdjacentHTML('beforeend', `
+            <div id="${loadingId}" class="chat chat-start">
+                <div class="chat-image avatar">
+                    <div class="w-10 rounded-full">
+                         <img src="/static/images/bot-avatar.png" onerror="this.src='https://ui-avatars.com/api/?name=AI&background=10b981&color=fff'" />
+                    </div>
+                </div>
+                <div class="chat-bubble chat-bubble-secondary">
+                    <span class="loading loading-dots loading-sm"></span>
+                </div>
+            </div>
+        `);
+        scrollToBottom();
+
         // Send { "message": "..." } as expected by Pydantic ChatRequest
         const res = await apiCall(`/conversations/${currentConversationId}/messages`, 'POST', { message: content });
-        
-        // Remove loading
-        const loader = document.getElementById(loadingId);
-        if(loader) loader.remove();
 
         if (res && res.ok) {
             const responseData = await res.json();
             // Response is { messages: [UserMsg, AiMsg] }
-            // We already showed UserMsg optimistically, so only show the last one (AI Response)
-            // Or better: ensure we only append what we haven't shown. 
-            // The backend returns both.
             
             if (responseData.messages && responseData.messages.length > 0) {
                  // Find the AI message
@@ -241,13 +336,18 @@ async function sendMessage(event) {
         } else {
             showToast('Failed to send message', 'error');
         }
+
     } catch (e) {
-        const loader = document.getElementById(loadingId);
-        if(loader) loader.remove();
         console.error(e);
-        showToast('Error sending message', 'error');
+        showToast('Error processing message', 'error');
+    } finally {
+        if (loadingId) {
+             const loader = document.getElementById(loadingId);
+             if(loader) loader.remove();
+        }
+        setChatState(false);
+        scrollToBottom();
     }
-    scrollToBottom();
 }
 
 function scrollToBottom() {

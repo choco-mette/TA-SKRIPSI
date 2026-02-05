@@ -33,3 +33,11 @@ class ConversationRepository:
             .filter(Message.conversation_id == conversation_id)\
             .order_by(Message.created_at.asc())\
             .all()
+
+    def delete_conversation(self, conversation_id: UUID) -> bool:
+        conv = self.get_by_id(conversation_id)
+        if conv:
+            self.db.delete(conv)
+            self.db.commit()
+            return True
+        return False

@@ -80,7 +80,7 @@ class Conversation(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     user = relationship("User", back_populates="conversations")
-    messages = relationship("Message", back_populates="conversation")
+    messages = relationship("Message", back_populates="conversation", cascade="all, delete-orphan")
 
 class Message(Base):
     __tablename__ = "messages"
