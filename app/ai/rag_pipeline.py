@@ -5,6 +5,9 @@ from app.ai.retriever import Retriever
 from app.ai.memory import ChatMemory
 from app.ai.prompt_builder import PromptBuilder
 from app.ai.llm import LLMService
+from app.utils.logger import setup_logger
+
+logger = setup_logger(__name__)
 
 class RAGPipeline:
     def __init__(self, db: Session):
@@ -22,6 +25,8 @@ class RAGPipeline:
         3. Build prompt (Personality + Rules + Context + History)
         4. Invoke LLM
         """
+        logger.info(f"Starting RAG Pipeline for Conversation: {conversation_id}")
+        
         # 1. Retrieve Context (RAG)
         context_chunks = self.retriever.retrieve(user_message, top_k=3)
 
@@ -37,9 +42,11 @@ class RAGPipeline:
         # 5. Create Chain & Invoke
         chain = prompt | llm | StrOutputParser()
         
+        logger.info("Invoking LLM Chain...")
         response = chain.invoke({
             "chat_history": chat_history,
             "input": user_message
         })
+        logger.info("LLM Response received successfully.")
 
         return response

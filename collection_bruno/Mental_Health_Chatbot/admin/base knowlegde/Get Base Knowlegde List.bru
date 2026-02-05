@@ -1,0 +1,20 @@
+meta {
+  name: Get Base Knowlegde List
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{server}}/api/v1/admin/base-knowledge/
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

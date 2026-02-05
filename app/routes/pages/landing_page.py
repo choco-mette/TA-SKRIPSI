@@ -4,11 +4,9 @@ import os
 
 router = APIRouter()
 
-# Setup templates (Adjust path relative to this file)
-# app/routes/pages/auth.py -> app/templates
 templates_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "templates")
 templates = Jinja2Templates(directory=templates_dir)
 
-@router.get("/login", tags=["Pages"])
-async def login_page(request: Request):
-    return templates.TemplateResponse("login/login.html", {"request": request})
+@router.get("/", tags=["Pages"])
+async def landing_page(request: Request):
+    return templates.TemplateResponse("landing/index.html", {"request": request})

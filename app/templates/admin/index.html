@@ -1,0 +1,368 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Admin Panel - Mental Health Chatbot{% endblock %}
+
+{% block content %}
+<script>
+    // Pass initial section from backend to JS
+    window.initialSection = "{{ initial_section | default('overview') }}";
+</script>
+<div class="drawer lg:drawer-open" id="main-drawer">
+  <input id="admin-drawer" type="checkbox" class="drawer-toggle" />
+  
+  <div class="drawer-content flex flex-col p-8 bg-base-100 h-screen overflow-y-auto">
+    <!-- Navbar for mobile -->
+    <div class="flex items-center mb-4 gap-4">
+        <!-- Mobile Toggle -->
+        <label for="admin-drawer" class="btn btn-square btn-ghost lg:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </label>
+        <!-- Desktop Toggle (Visible only when sidebar is closed) -->
+         <button id="btn-sidebar-expand" class="btn btn-square btn-ghost hidden" onclick="toggleSidebar()">
+             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+        </button>
+        <span class="font-bold text-lg lg:hidden">Admin Panel</span>
+    </div>
+
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold hidden lg:block">Administration</h1>
+        <div class="flex items-center gap-4">
+            <span class="text-sm opacity-70">Welcome, Admin</span>
+            <button onclick="logout()" class="btn btn-sm btn-outline btn-error">Logout</button>
+        </div>
+    </div>
+
+    <!-- Tabs Content -->
+    <div id="admin-content" class="flex-1">
+        <!-- Overview Section (Default) -->
+        <div id="section-overview" class="admin-section">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Stat 1 -->
+                <div class="stats shadow border border-base-200">
+                    <div class="stat">
+                        <div class="stat-title">Total Rules</div>
+                        <div class="stat-value text-primary" id="stat-rules">0</div>
+                        <div class="stat-desc">Active system prompts</div>
+                    </div>
+                </div>
+                <!-- Stat 2 -->
+                <div class="stats shadow border border-base-200">
+                    <div class="stat">
+                        <div class="stat-title">Environments</div>
+                        <div class="stat-value text-secondary" id="stat-envs">0</div>
+                        <div class="stat-desc">LLM Configurations</div>
+                    </div>
+                </div>
+                 <!-- Stat 3 -->
+                <div class="stats shadow border border-base-200">
+                    <div class="stat">
+                        <div class="stat-title">Documents</div>
+                        <div class="stat-value text-accent" id="stat-docs">0</div>
+                        <div class="stat-desc">Knowledge base</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rules Section -->
+        <div id="section-rules" class="admin-section hidden">
+            <div class="flex justify-between mb-4">
+                <h2 class="text-2xl font-bold">System Rules</h2>
+                <button onclick="openRuleModal()" class="btn btn-primary btn-sm">+ Add Rule</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="table border border-base-200">
+                    <thead class="bg-base-200">
+                        <tr>
+                            <th>No</th>
+                            <th>Content</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rules-table-body">
+                        <!-- JS injected -->
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination Rules -->
+            <div class="flex justify-between items-center mt-4">
+                <span class="text-xs opacity-50" id="page-info-rules">Page 1</span>
+                <div class="join">
+                    <button class="join-item btn btn-sm" onclick="prevPage('rules')">«</button>
+                    <button class="join-item btn btn-sm" onclick="nextPage('rules')">»</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personality Section -->
+        <div id="section-personality" class="admin-section hidden">
+            <div class="flex justify-between mb-4">
+                <h2 class="text-2xl font-bold">AI Personality</h2>
+                <button onclick="savePersonality()" class="btn btn-primary btn-sm">Save Changes</button>
+            </div>
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">System Persona Definition</span>
+                </label>
+                <textarea class="textarea textarea-bordered h-64 font-mono" id="personality-input" placeholder="You are a helpful assistant..."></textarea>
+            </div>
+        </div>
+
+        <!-- Environments Section -->
+        <div id="section-environments" class="admin-section hidden">
+            <div class="flex justify-between mb-4">
+                <h2 class="text-2xl font-bold">LLM Environments</h2>
+                <button onclick="openEnvModal()" class="btn btn-primary btn-sm">+ Add Environment</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="table border border-base-200">
+                    <thead class="bg-base-200">
+                        <tr>
+                            <th>No</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Base URL</th>
+                            <th>Active</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="env-table-body">
+                         <!-- JS injected -->
+                    </tbody>
+                </table>
+            </div>
+             <!-- Pagination Envs -->
+            <div class="flex justify-between items-center mt-4">
+                <span class="text-xs opacity-50" id="page-info-envs">Page 1</span>
+                <div class="join">
+                    <button class="join-item btn btn-sm" onclick="prevPage('envs')">«</button>
+                    <button class="join-item btn btn-sm" onclick="nextPage('envs')">»</button>
+                </div>
+            </div>
+        </div>
+        
+         <!-- Documents Section -->
+        <div id="section-documents" class="admin-section hidden">
+             <div class="flex justify-between mb-4">
+                <h2 class="text-2xl font-bold">PDF Documents</h2>
+                <button onclick="document.getElementById('upload-modal').showModal()" class="btn btn-primary btn-sm">+ Upload PDF</button>
+            </div>
+             <div class="overflow-x-auto">
+                <table class="table border border-base-200">
+                    <thead class="bg-base-200">
+                        <tr>
+                            <th>No</th>
+                            <th>Title</th>
+                            <th>Created At</th>
+                             <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="docs-table-body">
+                         <!-- JS injected -->
+                    </tbody>
+                </table>
+            </div>
+             <!-- Pagination Documents -->
+            <div class="flex justify-between items-center mt-4">
+                <span class="text-xs opacity-50" id="page-info-docs">Page 1</span>
+                <div class="join">
+                    <button class="join-item btn btn-sm" onclick="prevPage('docs')">«</button>
+                    <button class="join-item btn btn-sm" onclick="nextPage('docs')">»</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Base Knowledge Section -->
+        <div id="section-knowledge" class="admin-section hidden">
+             <div class="flex justify-between mb-4">
+                <h2 class="text-2xl font-bold">Base Knowledge (Vectors)</h2>
+                <!-- Read Only -->
+            </div>
+             <div class="overflow-x-auto">
+                <table class="table border border-base-200">
+                    <thead class="bg-base-200">
+                        <tr>
+                            <th>No</th>
+                            <th>Document Title</th>
+                            <th>Content Preview</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="knowledge-table-body">
+                         <!-- JS injected -->
+                    </tbody>
+                </table>
+            </div>
+             <!-- Pagination Knowledge -->
+            <div class="flex justify-between items-center mt-4">
+                <span class="text-xs opacity-50" id="page-info-knowledge">Page 1</span>
+                <div class="join">
+                    <button class="join-item btn btn-sm" onclick="prevPage('knowledge')">«</button>
+                     <button class="join-item btn btn-sm" onclick="nextPage('knowledge')">»</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+  </div> 
+
+  <!-- Sidebar -->
+  <div class="drawer-side z-20">
+    <label for="admin-drawer" class="drawer-overlay"></label> 
+    <ul class="menu p-4 w-64 h-full bg-base-200 text-base-content">
+      <div class="mb-6 px-4 flex justify-between items-center">
+          <span class="text-xl font-bold">Admin Console</span>
+          <button class="btn btn-square btn-ghost btn-sm hidden lg:inline-flex" onclick="toggleSidebar()">
+             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </button>
+      </div>
+      <li><a onclick="showSection('overview')" class="active" id="nav-overview">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
+          Overview
+      </a></li>
+      <li><a onclick="showSection('rules')" id="nav-rules">
+           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" /></svg>
+          Rules
+      </a></li>
+      <li><a onclick="showSection('personality')" id="nav-personality">
+           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" /></svg>
+          Personality
+      </a></li>
+      <li><a onclick="showSection('environments')" id="nav-environments">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 018.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.439 1.11.815 1.731 1.056.494.192.678.71.463 1.229l-.592 1.48a.75.75 0 01-.986.376l-.548-.27a.75.75 0 01-.365-.63L20.82 12M5.187 18.334C4.305 17.5 3.35 16.593 2.522 15.534m2.665 2.8c.219-.74.383-1.503.493-2.278" /></svg>
+          Environments
+      </a></li>
+      <li><a onclick="showSection('documents')" id="nav-documents">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+          Documents
+      </a></li>
+      <li><a onclick="showSection('knowledge')" id="nav-knowledge">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 012.012 1.244l.256.512a2.25 2.25 0 002.013 1.244h3.218a2.25 2.25 0 002.013-1.244l.256-.512a2.25 2.25 0 012.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 00-2.15-1.588H6.911a2.25 2.25 0 00-2.15 1.588L2.35 13.177a2.25 2.25 0 00-.1.661z" /></svg>
+          Base Knowledge
+      </a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- Modals -->
+
+<!-- Rule Modal -->
+<dialog id="rule_modal" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg" id="rule-modal-title">Add New Rule</h3>
+    <input type="hidden" id="rule-id">
+    <div class="form-control w-full mt-4">
+        <label class="label"><span class="label-text">Content</span></label>
+        <textarea id="rule-content" class="textarea textarea-bordered h-24" placeholder="Rule content..."></textarea>
+    </div>
+    <div class="form-control w-full mt-2">
+         <label class="label cursor-pointer justify-start gap-4">
+            <span class="label-text">Is Active</span> 
+            <input type="checkbox" id="rule-active" class="checkbox checkbox-primary" checked />
+          </label>
+    </div>
+    <div class="modal-action">
+      <form method="dialog">
+        <button class="btn">Cancel</button>
+        <button class="btn btn-primary" onclick="saveRule(event)">Save</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<!-- Environment Modal -->
+<dialog id="env_modal" class="modal">
+  <div class="modal-box">
+     <h3 class="font-bold text-lg" id="env-modal-title">Config Environment</h3>
+     <input type="hidden" id="env-id">
+     <div class="form-control w-full mt-2">
+        <label class="label"><span class="label-text">Model Name</span></label>
+        <input type="text" id="env-name" class="input input-bordered w-full" placeholder="e.g. gpt-4 or deepseek" />
+    </div>
+    <div class="form-control w-full mt-2">
+        <label class="label"><span class="label-text">API Key</span></label>
+        <input type="password" id="env-key" class="input input-bordered w-full" placeholder="..." />
+    </div>
+    <div class="form-control w-full mt-2">
+        <label class="label"><span class="label-text">Base URL</span></label>
+        <input type="text" id="env-url" class="input input-bordered w-full" placeholder="https://api.openai.com/v1" />
+    </div>
+     <div class="form-control w-full mt-2">
+        <label class="label"><span class="label-text">Type</span></label>
+        <select class="select select-bordered" id="env-type">
+            <option value="chat">Chat</option>
+            <option value="embedding">Embedding</option>
+        </select>
+    </div>
+    <div class="form-control w-full mt-2">
+         <label class="label cursor-pointer justify-start gap-4">
+            <span class="label-text">Is Active</span> 
+            <input type="checkbox" id="env-active" class="checkbox checkbox-primary" />
+          </label>
+    </div>
+     <div class="modal-action">
+      <form method="dialog">
+        <button class="btn">Cancel</button>
+        <button class="btn btn-primary" onclick="saveEnv(event)">Save</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<!-- PDF Upload Modal -->
+<dialog id="upload-modal" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Upload Document (PDF)</h3>
+    <form id="upload-form" class="mt-4">
+        <input type="file" id="pdf-file" class="file-input file-input-bordered w-full" accept=".pdf" />
+        <p class="text-xs text-opacity-50 mt-2">Uploading will automatically trigger ingestion (cleaning, splitting, embedding).</p>
+    </form>
+    <div class="modal-action">
+      <form method="dialog">
+        <button class="btn">Cancel</button>
+        <button class="btn btn-primary" onclick="uploadDocument(event)">Upload</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<!-- Knowledge Content Modal -->
+<dialog id="knowledge_modal" class="modal">
+  <div class="modal-box w-11/12 max-w-5xl">
+    <h3 class="font-bold text-lg">Full Content Viewer</h3>
+    <div class="py-4">
+        <textarea id="knowledge-full-content" class="textarea textarea-bordered w-full h-96 font-mono text-m" readonly></textarea>
+    </div>
+    <div class="modal-action">
+      <form method="dialog">
+        <button class="btn">Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<script src="/static/js/utils/http.js"></script>
+<script src="/static/js/admin.js?v=3"></script>
+<script>
+    function toggleSidebar() {
+        const drawer = document.getElementById('main-drawer');
+        const btnExpand = document.getElementById('btn-sidebar-expand');
+        
+        drawer.classList.toggle('lg:drawer-open');
+        
+        if (drawer.classList.contains('lg:drawer-open')) {
+            btnExpand.classList.add('hidden');
+            btnExpand.classList.remove('lg:inline-flex'); // Remove flex display
+        } else {
+             btnExpand.classList.remove('hidden');
+             btnExpand.classList.add('lg:inline-flex'); // Restore flex display
+        }
+    }
+</script>
+{% endblock %}

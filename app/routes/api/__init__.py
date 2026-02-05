@@ -5,6 +5,7 @@ from app.routes.api.admin.rules import router as admin_rules_router
 from app.routes.api.admin.personality import router as admin_personality_router
 from app.routes.api.admin.enviroment import router as admin_environment_router
 from app.routes.api.admin.documents import router as admin_documents_router
+from app.routes.api.admin.base_knowledge import router as admin_base_knowledge_router
 from app.routes.api.conversation import router as conversation_router
 
 api_router = APIRouter()
@@ -15,3 +16,4 @@ api_router.include_router(admin_rules_router, prefix="/admin/rules", tags=["admi
 api_router.include_router(admin_personality_router, prefix="/admin/personality", tags=["admin-personality"])
 api_router.include_router(admin_environment_router, prefix="/admin/environments", tags=["admin-environments"])
 api_router.include_router(admin_documents_router, prefix="/admin/documents", tags=["admin-documents"])
+api_router.include_router(admin_base_knowledge_router, prefix="/admin/base-knowledge", tags=["admin-base-knowledge"])

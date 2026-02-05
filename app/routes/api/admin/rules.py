@@ -22,7 +22,7 @@ def create_rule(
 @router.get("/", response_model=List[RuleResponse])
 def get_rules(
     skip: int = 0,
-    limit: int = 100,
+    limit: int = 10,
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):

@@ -33,3 +33,15 @@ class BaseKnowledgeRepository:
     def delete_by_doc_id(self, doc_id: int):
         self.db.query(BaseKnowledge).filter(BaseKnowledge.doc_id == doc_id).delete()
         self.db.commit()
+
+    def get_all_chunks(self, skip: int = 0, limit: int = 100):
+        # Join with Document to get title
+        results = (
+            self.db.query(BaseKnowledge, Document.title)
+            .join(Document, BaseKnowledge.doc_id == Document.id)
+            .order_by(BaseKnowledge.doc_id, BaseKnowledge.langchain_id)
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+        return results
