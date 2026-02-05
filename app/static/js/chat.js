@@ -269,9 +269,9 @@ async function sendMessage(event) {
     try {
         // --- Lazy Conversation Creation ---
         if (!currentConversationId) {
-            // Generate title from first 30 chars
-            let title = content.substring(0, 30);
-            if (content.length > 30) title += '...';
+            // Generate title from first 50 chars, cleaning newlines
+            let title = content.split('\n')[0].substring(0, 50).trim();
+            if (content.length > 50 || content.split('\n').length > 1) title += '...';
 
             const res = await apiCall('/conversations', 'POST', { title: title });
             if (res && res.ok) {
