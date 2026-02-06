@@ -1,0 +1,77 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Register - Mental Health Chatbot{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-[calc(100vh-4rem)] p-4">
+    <div class="card w-full max-w-3xl bg-base-100 shadow-xl border border-base-200">
+        <div class="card-body">
+            <h2 class="card-title justify-center text-2xl font-bold mb-4 text-primary">Create Account</h2>
+            <p class="text-center text-sm text-base-content/70 mb-4">Join us today</p>
+            
+            <form id="registerForm" onsubmit="handleRegister(event)">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-control w-full">
+                        <label class="label">
+                            <span class="label-text">Full Name</span>
+                        </label>
+                        <input type="text" id="full_name" placeholder="John Doe" class="input input-bordered w-full" required />
+                    </div>
+
+                    <div class="form-control w-full">
+                        <label class="label">
+                            <span class="label-text">Username</span>
+                        </label>
+                        <input type="text" id="username" placeholder="johndoe" class="input input-bordered w-full" minlength="3" required />
+                    </div>
+                    
+                    <div class="form-control w-full md:col-span-2">
+                        <label class="label">
+                            <span class="label-text">Email</span>
+                        </label>
+                        <input type="email" id="email" placeholder="name@example.com" class="input input-bordered w-full" required />
+                    </div>
+
+                    <div class="form-control w-full">
+                        <label class="label">
+                            <span class="label-text">Date of Birth</span>
+                        </label>
+                        <input type="date" id="date_of_birth" class="input input-bordered w-full" required />
+                    </div>
+
+                    <div class="form-control w-full">
+                        <label class="label">
+                            <span class="label-text">Gender</span>
+                        </label>
+                        <select id="gender" class="select select-bordered w-full" required>
+                            <option value="" disabled selected>Select Gender</option>
+                            <option value="laki-laki">Laki-laki</option>
+                            <option value="perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-control w-full md:col-span-2">
+                        <label class="label">
+                            <span class="label-text">Password</span>
+                        </label>
+                        <input type="password" id="password" placeholder="Min 6 characters" class="input input-bordered w-full" minlength="6" required />
+                    </div>
+                </div>
+                
+                <div class="card-actions justify-center mt-6">
+                    <button type="submit" class="btn btn-primary w-full md:w-1/2" id="registerBtn">
+                        Register
+                    </button>
+                </div>
+                
+                <div class="text-center mt-4 text-sm">
+                    Already have an account? <a href="/login" class="link link-primary">Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/utils/http.js"></script>
+<script src="/static/js/register.js"></script>
+{% endblock %}
