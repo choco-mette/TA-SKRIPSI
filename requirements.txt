@@ -6,7 +6,7 @@ annotated-types==0.7.0
 anyio==4.11.0
 asyncpg==0.30.0
 attrs==25.3.0
-bcrypt==5.0.0
+bcrypt==4.3.0
 certifi==2025.8.3
 cffi==2.0.0
 charset-normalizer==3.4.3
@@ -19,6 +19,7 @@ dnspython==2.8.0
 dotenv==0.9.9
 ecdsa==0.19.1
 email-validator==2.3.0
+et_xmlfile==2.0.0
 fastapi==0.118.0
 fastapi-cli==0.0.13
 fastapi-cloud-cli==0.3.0
@@ -77,8 +78,10 @@ nvidia-nvjitlink-cu12==12.8.93
 nvidia-nvtx-cu12==12.8.90
 ollama==0.6.0
 openai==2.16.0
+openpyxl==3.1.5
 orjson==3.11.3
 packaging==25.0
+pandas==3.0.0
 passlib==1.7.4
 pgvector==0.3.6
 pillow==11.3.0
@@ -97,6 +100,7 @@ Pygments==2.19.2
 PyMuPDF==1.26.5
 pypdf==6.1.1
 pytest==9.0.2
+python-dateutil==2.9.0.post0
 python-dotenv==1.1.1
 python-jose==3.5.0
 python-multipart==0.0.20
