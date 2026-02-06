@@ -5,7 +5,7 @@ from datetime import datetime
 from fastapi import UploadFile, HTTPException
 from sqlalchemy.orm import Session
 from langchain_community.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from app.models.models import Document, BaseKnowledge, User
 from app.repositories.document_repo import DocumentRepository, BaseKnowledgeRepository

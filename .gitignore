@@ -9,3 +9,6 @@ app/__pycache__/__init__.cpython-311.pyc
 logs/*
 venv
 docs
+app/log
+app/static/doc
+coba
