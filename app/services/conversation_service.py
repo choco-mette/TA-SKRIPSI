@@ -5,6 +5,9 @@ from uuid import UUID
 from app.models.models import Conversation, Message, User
 from app.repositories.conversation_repo import ConversationRepository
 from app.ai.rag_pipeline import RAGPipeline
+from app.utils.logger import setup_logger
+
+logger = setup_logger(__name__)
 
 class ConversationService:
     def __init__(self, db: Session):
@@ -59,7 +62,7 @@ class ConversationService:
             ai_response_text = self.rag.run(str(conversation_id), message_text)
         except Exception as e:
             # Fallback if AI fails
-            print(f"AI Generation Error: {e}")
+            logger.error(f"AI Generation Error for conversation {conversation_id}: {str(e)}", exc_info=True)
             ai_response_text = "Maaf, saya sedang mengalami gangguan sistem sementara."
 
         # 4. Save AI Response

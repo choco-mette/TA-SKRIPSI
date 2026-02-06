@@ -1,11 +1,35 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from app.routes.api import api_router
 from app.routes.pages import pages_router
+from app.utils.logger import setup_logger
 import os
+import time
+
+logger = setup_logger("api_access")
 
 app = FastAPI(title="Mental Health Chatbot")
+
+# Global Logging Middleware
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start_time = time.time()
+    
+    # Log Request
+    logger.info(f"Incoming Request: {request.method} {request.url}")
+    
+    try:
+        response = await call_next(request)
+        
+        # Log Response
+        process_time = (time.time() - start_time) * 1000
+        logger.info(f"Request Completed: {request.method} {request.url} - Status: {response.status_code} - Duration: {process_time:.2f}ms")
+        
+        return response
+    except Exception as e:
+        logger.error(f"Request Failed: {request.method} {request.url} - Error: {str(e)}", exc_info=True)
+        raise e
 
 # Mount Static Files
 static_dir = os.path.join(os.path.dirname(__file__), "static")

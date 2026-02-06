@@ -4,6 +4,10 @@ from typing import List, Dict, Any
 
 from app.services.embedding_service import EmbeddingConfigService
 
+from app.utils.logger import setup_logger
+
+logger = setup_logger(__name__)
+
 class Retriever:
     def __init__(self, db: Session):
         self.db = db
@@ -14,6 +18,7 @@ class Retriever:
         Retrieves top_k most relevant document chunks for the given query using Cosine Similarity.
         """
         try:
+            logger.info(f"Generating embedding for query: '{query}'")
             # 1. Generate Embedding for the User Query
             embedder = self.embedding_service.get_embedding_model()
             query_vector = embedder.embed_query(query)
@@ -21,6 +26,7 @@ class Retriever:
             # 2. Vector Search (Cosine Similarity)
             # Using pgvector operator <=> for cosine distance
             # Similarity = 1 - Distance
+            logger.info("Executing vector search in database...")
             sql = text("""
                 SELECT 
                     bk.content, 
@@ -37,6 +43,8 @@ class Retriever:
                 "query_vector": str(query_vector),
                 "top_k": top_k
             }).fetchall()
+            
+            logger.info(f"Vector search returned {len(results)} matches.")
 
             # 3. Format Results
             documents = []
