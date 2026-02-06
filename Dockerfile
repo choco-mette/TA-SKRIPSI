@@ -18,7 +18,10 @@ RUN apt-get update && apt-get install -y \
 
 # Install python dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Use Docker BuildKit cache to speed up pip installs
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --upgrade pip && \
+    pip install -r requirements.txt
 
 # Copy project
 COPY . .
