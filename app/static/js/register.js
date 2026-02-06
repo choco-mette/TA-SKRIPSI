@@ -22,7 +22,7 @@ async function handleRegister(event) {
     
     // Validation
     if(password.length < 6) {
-        alert("Password must be at least 6 characters long.");
+        showToast("Password must be at least 6 characters long.", "warning");
         return;
     }
 
@@ -45,7 +45,13 @@ async function handleRegister(event) {
 
         if (response && response.ok) {
             // Success
-            alert("Registration successful! Please login.");
+            await Swal.fire({
+                icon: 'success',
+                title: 'Registration Successful',
+                text: 'Please login to continue.',
+                timer: 2000,
+                showConfirmButton: false
+            });
             window.location.href = '/login';
         } else {
             // Handle specific errors from API if possible
@@ -58,11 +64,11 @@ async function handleRegister(event) {
                     errorMsg = errorData.detail;
                 }
             }
-            alert(errorMsg);
+            showToast(errorMsg, "error");
         }
     } catch (error) {
         console.error("Registration error:", error);
-        alert("An error occurred during registration. Please try again.");
+        showToast("An error occurred during registration. Please try again.", "error");
     } finally {
         // Reset button
         registerBtn.innerHTML = originalBtnText;
