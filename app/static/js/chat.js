@@ -82,18 +82,23 @@ async function loadConversations() {
             container.className = 'flex items-center w-full group';
 
             const btn = document.createElement('button');
-            btn.className = 'btn btn-ghost btn-sm flex-1 justify-start font-normal truncate';
+            // Enhanced layout: flex instead of inline-flex, gap-2 for spacing, proper truncation handling
+            btn.className = 'btn btn-ghost btn-sm flex flex-1 items-center justify-start font-normal min-w-0 px-2 gap-2 shadow-none border-none';
             btn.onclick = () => loadChat(conv.id);
             btn.id = `conv-${conv.id}`;
             btn.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2 opacity-70">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 opacity-70 shrink-0">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
                 </svg>
-                <span class="truncate">${conv.title || 'Conversation ' + conv.id.slice(0,4)}</span>
+                <div class="flex-1 min-w-0 text-left">
+                     <div class="truncate text-sm leading-5">
+                        ${conv.title || 'Conversation ' + conv.id.slice(0,4)}
+                     </div>
+                </div>
             `;
 
             const delBtn = document.createElement('button');
-            delBtn.className = 'btn btn-ghost btn-xs btn-square opacity-0 group-hover:opacity-100 transition-opacity ml-1 text-error';
+            delBtn.className = 'btn btn-ghost btn-xs btn-square opacity-0 group-hover:opacity-100 transition-opacity ml-1 text-error shrink-0';
             delBtn.innerHTML = `
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
                     <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 0 0 1.5.06l.3-7.5Z" clip-rule="evenodd" />
