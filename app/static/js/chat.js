@@ -63,7 +63,7 @@ function getUserAvatarUrl(gender, username) {
 
 // --- Conversations Logic ---
 async function loadConversations() {
-    const res = await apiCall('/conversations');
+    const res = await apiCall('/conversations/');
     const listEl = document.getElementById('conversation-list');
     
     if (!listEl) return;
@@ -291,7 +291,7 @@ async function sendMessage(event) {
             let title = content.split('\n')[0].substring(0, 50).trim();
             if (content.length > 50 || content.split('\n').length > 1) title += '...';
 
-            const res = await apiCall('/conversations', 'POST', { title: title });
+            const res = await apiCall('/conversations/', 'POST', { title: title });
             if (res && res.ok) {
                 const newConv = await res.json();
                 currentConversationId = newConv.id;
