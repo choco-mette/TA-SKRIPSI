@@ -207,6 +207,80 @@
             </div>
         </div>
 
+        <!-- Evaluation: Questions Section -->
+        <div id="section-questions" class="admin-section hidden">
+             <div class="flex justify-between mb-4">
+                <h2 class="text-2xl font-bold">Evaluation Questions</h2>
+                 <div class="flex gap-2">
+                    <button class="btn btn-outline btn-sm" onclick="document.getElementById('question_import_modal').showModal()">Import CSV</button>
+                    <button class="btn btn-primary btn-sm" onclick="openAddQuestionModal()">Add Question</button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="table border border-base-200 w-full">
+                    <thead class="bg-base-200">
+                        <tr>
+                            <th class="w-12">ID</th>
+                            <th>Question</th>
+                            <th>Reference Answer</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="questions-table-body">
+                        <!-- JS injected -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Evaluation: Generative Eval Section -->
+        <div id="section-generative-eval" class="admin-section hidden">
+             <div class="flex justify-between mb-4 items-end">
+                <div>
+                   <h2 class="text-2xl font-bold mb-2">Generative Evaluation Results</h2>
+                   <div class="flex gap-2">
+                        <select id="filter-eval-env" class="select select-bordered select-sm max-w-xs" onchange="loadGenerativeEval()">
+                            <option value="">All Environments</option>
+                            <!-- Options injected -->
+                        </select>
+                        <div class="flex items-center gap-1">
+                            <span class="text-xs">Start:</span>
+                            <input type="date" id="filter-eval-start-date" class="input input-bordered input-sm" onchange="loadGenerativeEval()" />
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <span class="text-xs">End:</span>
+                            <input type="date" id="filter-eval-end-date" class="input input-bordered input-sm" onchange="loadGenerativeEval()" />
+                        </div>
+                   </div>
+                </div>
+                 <div class="flex gap-2">
+                    <select id="eval-environment-select" class="select select-bordered select-sm w-full max-w-xs">
+                        <option disabled selected>Select Models AI</option>
+                        <!-- Environment Options injected via JS -->
+                    </select>
+                    <button class="btn btn-secondary btn-sm" onclick="runGenerativeEval()">Run New Eval</button>
+                </div>
+            </div>
+             <div class="overflow-x-auto">
+                <table class="table border border-base-200 w-full table-xs">
+                    <thead class="bg-base-200">
+                        <tr>
+                            <th>Date</th>
+                            <th>Environment</th>
+                            <th>Question</th>
+                            <th>Answer Preview</th>
+                            <th>BLEU</th>
+                            <th>ROUGE-1</th>
+                            <th>ROUGE-L</th>
+                        </tr>
+                    </thead>
+                    <tbody id="generative-eval-table-body">
+                         <!-- JS injected -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
   </div> 
 
@@ -243,9 +317,25 @@
           Documents
       </a></li>
       <li><a onclick="showSection('knowledge')" id="nav-knowledge">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 012.012 1.244l.256.512a2.25 2.25 0 002.013 1.244h3.218a2.25 2.25 0 002.013-1.244l.256-.512a2.25 2.25 0 012.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 00-2.15-1.588H6.911a2.25 2.25 0 00-2.15 1.588L2.35 13.177a2.25 2.25 0 00-.1.661z" /></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+          </svg>
           Base Knowledge
       </a></li>
+      <li>
+        <details>
+          <summary>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Evaluation
+          </summary>
+          <ul>
+            <li><a onclick="showSection('questions')" id="nav-questions">Question</a></li>
+            <li><a onclick="showSection('generative-eval')" id="nav-generative-eval">Generative Eval</a></li>
+          </ul>
+        </details>
+      </li>
     </ul>
   </div>
 </div>
@@ -347,8 +437,77 @@
   </div>
 </dialog>
 
+<!-- Question Add/Edit Modal -->
+<dialog id="question_add_modal" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg" id="question-modal-title">Add Test Question</h3>
+    <input type="hidden" id="question-id">
+    <div class="form-control w-full mt-4">
+        <label class="label"><span class="label-text">Question</span></label>
+        <textarea id="question-text" class="textarea textarea-bordered h-24" placeholder="Enter evaluation question..."></textarea>
+    </div>
+    <div class="form-control w-full mt-4">
+        <label class="label"><span class="label-text">Reference Answer</span></label>
+        <textarea id="question-reference" class="textarea textarea-bordered h-24" placeholder="Enter ideal answer..."></textarea>
+    </div>
+    <div class="modal-action">
+      <form method="dialog">
+        <button class="btn">Cancel</button>
+        <button class="btn btn-primary" onclick="saveQuestion(event)">Save</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<!-- Question Import CSV Modal -->
+<dialog id="question_import_modal" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Import Questions from CSV</h3>
+    <p class="py-4 text-sm opacity-70">CSV Headers: <code>question, reference_answer</code></p>
+    <div class="form-control w-full">
+        <input type="file" id="question-csv-file" class="file-input file-input-bordered w-full" accept=".csv" />
+    </div>
+    <div class="modal-action">
+      <form method="dialog">
+        <button class="btn">Cancel</button>
+        <button class="btn btn-primary" onclick="importQuestions(event)">Upload</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<!-- Evaluation Confirmation Modal -->
+<dialog id="eval_confirm_modal" class="modal">
+  <div class="modal-box w-11/12 max-w-4xl">
+    <h3 class="font-bold text-lg mb-2">Review Test Cases</h3>
+    <p class="text-sm opacity-70 mb-4">The following questions will be evaluated using model: <span id="eval-confirm-model-name" class="font-bold"></span></p>
+    
+    <div class="overflow-x-auto max-h-96 border border-base-200 rounded-lg">
+        <table class="table table-xs table-pin-rows">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Question</th>
+                    <th>Reference Answer</th>
+                </tr>
+            </thead>
+            <tbody id="eval-confirm-table-body">
+                <!-- Injected via JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal-action">
+      <form method="dialog">
+        <button class="btn">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmRunGenerativeEval(event)">Confirm & Run</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
 <script src="/static/js/utils/http.js"></script>
-<script src="/static/js/admin.js?v=3"></script>
+<script type="module" src="/static/js/admin_modules/index.js"></script>
 <script>
     function toggleSidebar() {
         const drawer = document.getElementById('main-drawer');

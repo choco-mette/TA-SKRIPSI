@@ -4,6 +4,11 @@ let currentUser = null;
 
 // --- Initialization ---
 document.addEventListener('DOMContentLoaded', async () => {
+    // Configure Marked if available
+    if (typeof marked !== 'undefined') {
+        marked.use({ breaks: true, gfm: true });
+    }
+
     // Auth Check
     if (!isAuthenticated()) {
         window.location.href = '/login';
@@ -242,6 +247,22 @@ function appendMessage(msg) {
     // Handle Image Error inside HTML string (fallback to text if image fails)
     const imgError = "this.onerror=null;this.src='/static/images/user-avatar.png';";
 
+    // Parse Markdown if Bot
+    let messageHtml;
+    if (isBot && typeof marked !== 'undefined' && typeof DOMPurify !== 'undefined') {
+        const rawHtml = marked.parse(textContent);
+        messageHtml = DOMPurify.sanitize(rawHtml);
+    } else {
+        // Escape HTML for user (basic security)
+        const div = document.createElement('div');
+        div.innerText = textContent;
+        messageHtml = div.innerHTML;
+    }
+
+    // For Bot messages (Markdown), we rely on default block styling.
+    // For User messages (Text), we keep whitespace-pre-wrap to preserve line breaks.
+    const whitespaceClass = isBot ? 'prose prose-sm max-w-none' : 'whitespace-pre-wrap';
+
     const html = `
         <div class="chat ${alignClass}">
             <div class="chat-image avatar">
@@ -252,7 +273,7 @@ function appendMessage(msg) {
             <div class="chat-header opacity-50 text-xs mb-1">
                 ${isBot ? 'Wellness Assistant' : (currentUser ? currentUser.username : 'You')}
             </div>
-            <div class="chat-bubble ${bubbleColor} whitespace-pre-wrap">${textContent}</div>
+            <div class="chat-bubble ${bubbleColor} ${whitespaceClass}">${messageHtml}</div>
         </div>
     `;
     container.insertAdjacentHTML('beforeend', html);

@@ -1,6 +1,6 @@
 from sqlalchemy import (
     Column, Integer, String, Text, Boolean, Date, DateTime, 
-    ForeignKey, Enum, JSON
+    ForeignKey, Enum, JSON, Float
 )
 from sqlalchemy.dialects.postgresql import UUID
 from pgvector.sqlalchemy import Vector
@@ -103,3 +103,39 @@ class EnvironmentModel(Base):
     model_type = Column(Enum('chat', 'embedding', name='model_type_enum'))
     is_active = Column(Boolean, default=False)
     
+class CategoryTestCase(Base):
+    __tablename__ = "category_test_cases"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    category_test = relationship("RagTestCase", back_populates="category", cascade="all, delete-orphan")
+
+class RagTestCase(Base):
+    __tablename__ = "rag_test_cases"
+
+    id = Column(Integer, primary_key=True, index=True)
+    question = Column(Text)
+    reference_answer = Column(Text)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    category_id = Column(Integer, ForeignKey("category_test_cases.id"))
+
+    category = relationship("CategoryTestCase", back_populates="category_test")
+    test_results = relationship("RagEvaluationResult", back_populates="test_case", cascade="all, delete-orphan")
+
+class RagEvaluationResult(Base):
+    __tablename__ = "rag_evaluation_results"
+
+    id = Column(Integer, primary_key=True, index=True)
+    test_case_id = Column(Integer, ForeignKey("rag_test_cases.id"))
+    environment_id = Column(Integer, ForeignKey("environment_models.id"), nullable=True)
+    
+    model_answer = Column(Text)
+    bleu_score = Column(Float)
+    rouge_1 = Column(Float)
+    rouge_2 = Column(Float)
+    rouge_l = Column(Float)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    test_case = relationship("RagTestCase", back_populates="test_results")
+    environment = relationship("EnvironmentModel")

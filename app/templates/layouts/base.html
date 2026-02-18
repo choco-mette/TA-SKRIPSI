@@ -7,7 +7,7 @@
     
     <!-- TailwindCSS & DaisyUI via CDN -->
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.6.0/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
 
     <!-- Custom Font: Google Fonts (Inter) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -40,6 +40,50 @@
         }
         .swal2-styled:hover {
             opacity: 0.9 !important;
+        }
+
+        /* Typography fixes for chat bubbles */
+        .chat-bubble.prose {
+            color: inherit;
+            max-width: none;
+        }
+        .chat-bubble.prose p {
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+        .chat-bubble.prose ul, .chat-bubble.prose ol {
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+            padding-left: 1.5em;
+            list-style-type: disc;
+        }
+        .chat-bubble.prose ol {
+            list-style-type: decimal;
+        }
+        .chat-bubble.prose h1, .chat-bubble.prose h2, .chat-bubble.prose h3 {
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+        .chat-bubble.prose :first-child {
+            margin-top: 0;
+        }
+        .chat-bubble.prose :last-child {
+            margin-bottom: 0;
+        }
+        .chat-bubble.prose a {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+        .chat-bubble.prose pre {
+            background-color: #1f2937;
+            color: #e5e7eb;
+            padding: 0.5em;
+            border-radius: 0.375rem;
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+            overflow-x: auto;
         }
     </style>
     {% block extra_css %}{% endblock %}

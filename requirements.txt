@@ -30,3 +30,9 @@ pypdf
 
 # Validasi Email (Optional but good to keep if used)
 email-validator
+
+# Evaluation RAG
+
+rouge-score
+nltknltk
+rouge-score

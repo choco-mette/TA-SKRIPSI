@@ -11,8 +11,9 @@ logger = setup_logger(__name__)
 llm_logger = setup_llm_logger("llm_trace")
 
 class RAGPipeline:
-    def __init__(self, db: Session):
+    def __init__(self, db: Session, environment_id: int = None):
         self.db = db
+        self.environment_id = environment_id
         self.retriever = Retriever(db)
         self.memory = ChatMemory(db)
         self.prompt_builder = PromptBuilder(db)
@@ -27,6 +28,15 @@ class RAGPipeline:
         4. Invoke LLM
         """
         logger.info(f"Starting RAG Pipeline for Conversation: {conversation_id}")
+        
+        # 1. Retrieve Context
+        # ... (retrieve logic)
+
+        # 4. Invoke LLM
+        # Pass environment_id to get_llm_model
+        llm = self.llm_service.get_llm_model(environment_id=self.environment_id)
+        
+        # ... (invoke chain)
         
         # 1. Retrieve Context (RAG)
         logger.info(f"Retrieving context for query: {user_message[:50]}...")
@@ -64,7 +74,8 @@ class RAGPipeline:
                 llm_logger.warning(f"Could not log system prompt template: {e}")
 
         # 4. Get LLM Model
-        llm = self.llm_service.get_llm_model()
+        # Use custom environment_id if provided during init
+        llm = self.llm_service.get_llm_model(environment_id=self.environment_id)
 
         # 5. Create Chain & Invoke
         chain = prompt | llm | StrOutputParser()
