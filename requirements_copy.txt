@@ -1,0 +1,38 @@
+# Core Web Framework
+fastapi
+uvicorn[standard]
+python-multipart
+python-dotenv
+jinja2
+requests
+httpx
+
+# Database (PostgreSQL + pgvector)
+sqlalchemy
+alembic
+psycopg[binary]
+pgvector
+
+# Authentication
+python-jose[cryptography]
+passlib[bcrypt]
+bcrypt==4.0.1
+
+# AI & LangChain (Lightweight Setup - No local Torch/Transformers)
+langchain
+langchain-community
+langchain-openai
+langchain-postgres
+langchain-text-splitters
+
+# Document Processing
+pypdf
+
+# Validasi Email (Optional but good to keep if used)
+email-validator
+
+# Evaluation RAG
+
+rouge-score
+nltknltk
+rouge-score
