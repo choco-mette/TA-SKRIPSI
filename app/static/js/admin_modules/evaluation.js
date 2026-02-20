@@ -242,13 +242,17 @@ export async function loadGenerativeEval() {
         if (res.ok) {
             const data = await res.json();
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center">No evaluation results found for selected criteria.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center">No evaluation results found for selected criteria.</td></tr>';
                 return;
             }
 
             tbody.innerHTML = '';
-            data.forEach(r => {
+            data.forEach((r, index) => {
                 const tr = document.createElement('tr');
+                
+                // Calculate correct row number considering pagination
+                const rowNumber = (state.generative.page - 1) * state.generative.limit + index + 1;
+
                 // Format score to 4 decimal places
                 const bleu = r.bleu_score ? r.bleu_score.toFixed(4) : '0.0000';
                 const rouge1 = r.rouge_1 ? r.rouge_1.toFixed(4) : '0.0000';
@@ -256,6 +260,7 @@ export async function loadGenerativeEval() {
                 const date = new Date(r.created_at).toLocaleString();
 
                 tr.innerHTML = `
+                    <td class="text-xs font-bold">${rowNumber}</td>
                     <td class="whitespace-nowrap text-xs">${date}</td>
                     <td>${r.environment_name || r.environment_id}</td>
                     <td class="whitespace-nowrap max-w-[150px] truncate text-xs" title="${escapeHtml(r.question)}">${escapeHtml(truncate(r.question, 40)) || r.test_case_id}</td>
@@ -269,7 +274,7 @@ export async function loadGenerativeEval() {
         }
     } catch(e) {
         console.error("Error loading eval results", e);
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-error">Failed to load results.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-error">Failed to load results.</td></tr>';
     }
 }
 
