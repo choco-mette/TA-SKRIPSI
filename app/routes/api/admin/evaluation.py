@@ -42,6 +42,7 @@ def run_evaluation(
 
 @router.get("/results_generative", response_model=List[EvaluationResultResponse])
 def get_all_results_generative(
+    page: int = 1,
     limit: int = 100,
     environment_id: Optional[int] = None,
     start_date: Optional[str] = None,
@@ -49,8 +50,9 @@ def get_all_results_generative(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
+    offset = (page - 1) * limit
     service = EvaluationService(db)
-    return service.get_all_results(limit, environment_id, start_date, end_date)
+    return service.get_all_results(limit, offset, environment_id, start_date, end_date)
 
 @router.get("/results_generative/{environment_id}", response_model=List[EvaluationResultResponse])
 def get_results(

@@ -227,7 +227,7 @@ class EvaluationService:
             response.append(r_dict)
         return response
 
-    def get_all_results(self, limit: int = 100, environment_id: Optional[int] = None, start_date: Optional[Any] = None, end_date: Optional[Any] = None) -> List[Any]:
+    def get_all_results(self, limit: int = 100, offset: int = 0, environment_id: Optional[int] = None, start_date: Optional[Any] = None, end_date: Optional[Any] = None) -> List[Any]:
         query = self.db.query(
             RagEvaluationResult,
             RagTestCase.question.label("question"),
@@ -257,7 +257,7 @@ class EvaluationService:
                      pass
              query = query.filter(func.date(RagEvaluationResult.created_at) <= end_date)
 
-        results = query.order_by(RagEvaluationResult.created_at.desc()).limit(limit).all()
+        results = query.order_by(RagEvaluationResult.created_at.desc()).offset(offset).limit(limit).all()
 
         response = []
         for r, q, e_name in results:

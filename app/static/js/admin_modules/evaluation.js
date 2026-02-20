@@ -223,7 +223,7 @@ export async function loadGenerativeEval() {
 
     // Load Results with Filters
     try {
-        let url = `/admin/evaluations/results_generative?limit=${state.generative.limit}`;
+        let url = `/admin/evaluations/results_generative?page=${state.generative.page}&limit=${state.generative.limit}`;
         
         // Ensure we check for non-empty string as value
         if (selectFilter && selectFilter.value !== "") {
