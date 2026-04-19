@@ -32,6 +32,7 @@ window.importQuestions = Evaluation.importQuestions;
 window.runGenerativeEval = Evaluation.runGenerativeEval;
 window.confirmRunGenerativeEval = Evaluation.confirmRunGenerativeEval;
 window.loadGenerativeEval = Evaluation.loadGenerativeEval;
+window.viewEvalDetail = Evaluation.viewEvalDetail;
 
 // Navigation & Initialization
 

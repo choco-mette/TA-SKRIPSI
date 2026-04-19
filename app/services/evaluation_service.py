@@ -4,7 +4,7 @@ import uuid
 import csv
 import io
 from datetime import datetime
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Dict
 from nltk.translate.bleu_score import sentence_bleu, corpus_bleu, SmoothingFunction
 from nltk.tokenize import word_tokenize
 from rouge_score import rouge_scorer
@@ -21,7 +21,7 @@ try:
 except LookupError:
     nltk.download('punkt_tab')
 
-from app.models.models import RagTestCase, RagEvaluationResult, EnvironmentModel
+from app.models.models import RagTestCase, RagEvaluationResult, EnvironmentModel, RagEvaluationRougeDetail
 from app.ai.rag_pipeline import RAGPipeline
 from app.schemas.evaluation import EvaluationResultResponse
 from app.utils.logger import setup_logger
@@ -32,6 +32,57 @@ class EvaluationService:
     def __init__(self, db: Session):
         self.db = db
         self.rouge_scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
+
+    def evaluate_text_metrics(self, reference_text: str, generated_text: str) -> Dict[str, Any]:
+        """
+        Hitung metrik evaluasi dari pasangan teks (reference vs generated).
+        Fungsi ini bisa dipanggil langsung dari script test manual.
+        """
+        reference_text = (reference_text or "").strip()
+        generated_text = (generated_text or "").strip()
+
+        if not reference_text or not generated_text:
+            return {
+                "bleu_score": 0.0,
+                "rouge": {
+                    "rouge1": {"precision": 0.0, "recall": 0.0, "f1": 0.0},
+                    "rouge2": {"precision": 0.0, "recall": 0.0, "f1": 0.0},
+                    "rougeL": {"precision": 0.0, "recall": 0.0, "f1": 0.0},
+                }
+            }
+
+        ref_tokens = word_tokenize(reference_text.lower())
+        gen_tokens = word_tokenize(generated_text.lower())
+
+        cc = SmoothingFunction()
+        bleu = sentence_bleu(
+            [ref_tokens],
+            gen_tokens,
+            weights=(0.25, 0.25, 0.25, 0.25),
+            smoothing_function=cc.method1
+        )
+
+        rouge_scores = self.rouge_scorer.score(reference_text, generated_text)
+        return {
+            "bleu_score": bleu,
+            "rouge": {
+                "rouge1": {
+                    "precision": rouge_scores['rouge1'].precision,
+                    "recall": rouge_scores['rouge1'].recall,
+                    "f1": rouge_scores['rouge1'].fmeasure,
+                },
+                "rouge2": {
+                    "precision": rouge_scores['rouge2'].precision,
+                    "recall": rouge_scores['rouge2'].recall,
+                    "f1": rouge_scores['rouge2'].fmeasure,
+                },
+                "rougeL": {
+                    "precision": rouge_scores['rougeL'].precision,
+                    "recall": rouge_scores['rougeL'].recall,
+                    "f1": rouge_scores['rougeL'].fmeasure,
+                },
+            }
+        }
 
     def import_test_cases_from_csv(self, file_content: bytes) -> int:
         """
@@ -155,45 +206,38 @@ class EvaluationService:
                 else:
                     generated_text = str(generated_response)
 
-                # 5. Calculate Metrics
+                # 5. Calculate Metrics (reusable function)
                 reference_text = case.reference_answer
-                
-                # BLEU-4
-                # Tokenize
-                ref_tokens = word_tokenize(reference_text.lower())
-                gen_tokens = word_tokenize(generated_text.lower())
-                
-                # Use smooth function to handle short sentences (avoid 0 score when < 4 tokens)
-                cc = SmoothingFunction()
-
-                # # sentence_bleu expects list of references (list of lists of tokens)
-                bleu = sentence_bleu([ref_tokens], gen_tokens)
-
-                # sentence_bleu expects list of references (list of lists of tokens)
-                # weights=(0.25, 0.25, 0.25, 0.25) is the default for BLEU-4, 
-                # but explicit definition is clearer.
-                # BLEU-4
-                # bleu = sentence_bleu(
-                #     [ref_tokens], 
-                #     gen_tokens, 
-                #     weights=(0.25, 0.25, 0.25, 0.25),
-                #     smoothing_function=cc.method1
-                # )
-
-                # ROUGE
-                rouge_scores = self.rouge_scorer.score(reference_text, generated_text)
+                metrics = self.evaluate_text_metrics(reference_text, generated_text)
                 
                 # 6. Save Result
                 result = RagEvaluationResult(
                     test_case_id=case.id,
                     environment_id=environment_id,
                     model_answer=generated_text,
-                    bleu_score=bleu,
-                    rouge_1=rouge_scores['rouge1'].fmeasure,
-                    rouge_2=rouge_scores['rouge2'].fmeasure,
-                    rouge_l=rouge_scores['rougeL'].fmeasure
+                    bleu_score=metrics["bleu_score"],
+                    rouge_1=metrics["rouge"]["rouge1"]["f1"],
+                    rouge_2=metrics["rouge"]["rouge2"]["f1"],
+                    rouge_l=metrics["rouge"]["rougeL"]["f1"]
                 )
                 self.db.add(result)
+                self.db.flush()
+
+                # 7. Save Detailed ROUGE Metrics
+                rouge_detail = RagEvaluationRougeDetail(
+                    evaluation_result_id=result.id,
+                    rouge_1_precision=metrics["rouge"]["rouge1"]["precision"],
+                    rouge_1_recall=metrics["rouge"]["rouge1"]["recall"],
+                    rouge_1_f1=metrics["rouge"]["rouge1"]["f1"],
+                    rouge_2_precision=metrics["rouge"]["rouge2"]["precision"],
+                    rouge_2_recall=metrics["rouge"]["rouge2"]["recall"],
+                    rouge_2_f1=metrics["rouge"]["rouge2"]["f1"],
+                    rouge_l_precision=metrics["rouge"]["rougeL"]["precision"],
+                    rouge_l_recall=metrics["rouge"]["rougeL"]["recall"],
+                    rouge_l_f1=metrics["rouge"]["rougeL"]["f1"]
+                )
+                self.db.add(rouge_detail)
+
                 results.append(result)
                 
             except Exception as e:

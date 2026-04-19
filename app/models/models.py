@@ -139,3 +139,26 @@ class RagEvaluationResult(Base):
 
     test_case = relationship("RagTestCase", back_populates="test_results")
     environment = relationship("EnvironmentModel")
+    rouge_details = relationship("RagEvaluationRougeDetail", back_populates="evaluation_result", uselist=False, cascade="all, delete-orphan")
+
+class RagEvaluationRougeDetail(Base):
+    __tablename__ = "rag_evaluation_rouge_details"
+
+    id = Column(Integer, primary_key=True, index=True)
+    evaluation_result_id = Column(Integer, ForeignKey("rag_evaluation_results.id"))
+    
+    rouge_1_precision = Column(Float)
+    rouge_1_recall = Column(Float)
+    rouge_1_f1 = Column(Float)
+    
+    rouge_2_precision = Column(Float)
+    rouge_2_recall = Column(Float)
+    rouge_2_f1 = Column(Float)
+    
+    rouge_l_precision = Column(Float)
+    rouge_l_recall = Column(Float)
+    rouge_l_f1 = Column(Float)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    evaluation_result = relationship("RagEvaluationResult", back_populates="rouge_details")

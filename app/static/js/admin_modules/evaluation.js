@@ -23,14 +23,17 @@ export async function loadQuestions() {
             const end = start + state.questions.limit;
             const pageData = data.slice(start, end);
 
-            pageData.forEach((q) => {
+            pageData.forEach((q, idx) => {
                 const tr = document.createElement('tr');
                 // Escape needed for onclick arguments
                 const safeQ = encodeURIComponent(q.question);
                 const safeA = encodeURIComponent(q.reference_answer);
                 
+                // Calculate row number
+                const rowNum = start + idx + 1;
+                
                 tr.innerHTML = `
-                    <td>${q.id}</td>
+                    <td>${rowNum}</td>
                     <td class="truncate max-w-[150px] md:max-w-xs text-xs" title="${escapeHtml(q.question)}">${escapeHtml(truncate(q.question, 50))}</td>
                     <td class="truncate max-w-[150px] md:max-w-xs text-xs" title="${escapeHtml(q.reference_answer)}">${escapeHtml(truncate(q.reference_answer, 50))}</td>
                     <td>
@@ -256,26 +259,51 @@ export async function loadGenerativeEval() {
                 // Format score to 4 decimal places
                 const bleu = r.bleu_score ? r.bleu_score.toFixed(4) : '0.0000';
                 const rouge1 = r.rouge_1 ? r.rouge_1.toFixed(4) : '0.0000';
+                const rouge2 = r.rouge_2 ? r.rouge_2.toFixed(4) : '0.0000';
                 const rougeL = r.rouge_l ? r.rouge_l.toFixed(4) : '0.0000';
                 const date = new Date(r.created_at).toLocaleString();
+
+                // Safe strings for modal
+                const safeQ = encodeURIComponent(r.question);
+                const safeA = encodeURIComponent(r.model_answer);
+                const safeEnv = encodeURIComponent(r.environment_name || r.environment_id);
 
                 tr.innerHTML = `
                     <td class="text-xs font-bold">${rowNumber}</td>
                     <td class="whitespace-nowrap text-xs">${date}</td>
                     <td>${r.environment_name || r.environment_id}</td>
                     <td class="whitespace-nowrap max-w-[150px] truncate text-xs" title="${escapeHtml(r.question)}">${escapeHtml(truncate(r.question, 40)) || r.test_case_id}</td>
-                    <td class="text-xs" title="${escapeHtml(r.model_answer)}">${escapeHtml(truncate(r.model_answer, 50))}</td>
+                    <td class="text-xs max-w-[150px] truncate" title="${escapeHtml(r.model_answer)}">${escapeHtml(truncate(r.model_answer, 30))}</td>
                     <td class="font-mono text-xs">${bleu}</td>
                     <td class="font-mono text-xs">${rouge1}</td>
+                    <td class="font-mono text-xs">${rouge2}</td>
                     <td class="font-mono text-xs">${rougeL}</td>
+                    <td>
+                        <button class="btn btn-xs btn-neutral" onclick="viewEvalDetail('${safeEnv}', '${date}', '${safeQ}', '${safeA}', '${bleu}', '${rouge1}', '${rouge2}', '${rougeL}')">View</button>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
     } catch(e) {
         console.error("Error loading eval results", e);
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-error">Failed to load results.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center text-error">Failed to load results.</td></tr>';
     }
+}
+
+export function viewEvalDetail(env, date, q, a, bleu, r1, r2, rl) {
+    document.getElementById('detail-eval-env').innerText = decodeURIComponent(env);
+    document.getElementById('detail-eval-date').innerText = date;
+    document.getElementById('detail-eval-question').innerText = decodeURIComponent(q);
+    document.getElementById('detail-eval-answer').innerText = decodeURIComponent(a);
+    document.getElementById('detail-eval-bleu').innerText = bleu;
+    document.getElementById('detail-eval-r1').innerText = r1;
+    document.getElementById('detail-eval-r2').innerText = r2;
+    document.getElementById('detail-eval-rl').innerText = rl;
+    document.getElementById('detail-eval-question').innerText = decodeURIComponent(q);
+    document.getElementById('detail-eval-answer').innerText = decodeURIComponent(a);
+    
+    document.getElementById('eval_detail_modal').showModal();
 }
 
 export async function runGenerativeEval() {
