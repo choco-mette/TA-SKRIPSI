@@ -1,0 +1,44 @@
+services:
+  backend:
+    build: .
+    container_name: backend_ai_dev
+    restart: always
+    ports:
+      - "127.0.0.1:${APP_PORT}:8000" # Mapping host port from .env to container port 8000
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=db # Override localhost for Docker networking
+      - DB_PORT=5432 # Force internal standard port for container-to-container
+    volumes:
+      - .:/app # Mount host code directory to container for hot reloading
+      - ./app/log:/app/app/log # Persist logs to local machine
+      - ./app/static:/app/app/static # Persist uploads/static content
+    # Override standard CMD from Dockerfile to enable hot reload during development
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --proxy-headers --forwarded-allow-ips '*'"
+    depends_on:
+      - db
+    networks:
+      - ai_network
+
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: postgres_vector_dev
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-mental_health}
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data # Separate volume for development data
+    ports:
+      - "${DB_PORT:-5432}:5432" # Map host DB_PORT to standard container port 5432
+    networks:
+      - ai_network
+
+volumes:
+  postgres_data_dev:
+
+networks:
+  ai_network:
+    driver: bridge

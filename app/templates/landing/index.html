@@ -1,77 +1,304 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Mental Health Assistant - Your Safe Space{% endblock %}
+{% block title %}Sohaboth-AI - Ruang Aman untuk Setiap Cerita & Rasa{% endblock %}
 
 {% block content %}
-<div class="hero min-h-dvh bg-base-200">
-  <div class="hero-content text-center">
-    <div class="max-w-md">
-      <h1 class="text-5xl font-bold text-primary">Wellness AI</h1>
-      <p class="py-6">Your personal mental health companion. A safe, judgment-free space to talk, reflect, and find support whenever you need it.</p>
-      
-      <div class="flex gap-4 justify-center">
-        <a href="/login" id="cta-btn" class="btn btn-primary">Get Started</a>
-        <a href="#features" class="btn btn-ghost">Learn More</a>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- Wrapper untuk mengaktifkan scroll pada landing page (karena body menggunakan overflow-hidden di base.html) -->
+<div class="h-full w-full overflow-y-auto scroll-smooth">
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            const btn = document.getElementById('cta-btn');
-            if (btn) {
-                btn.textContent = 'Go to Dashboard';
-                // We rely on login page redirect or we can redirect directly here
-                // But linking to login is safe as it handles redirection
-                btn.href = '/login'; 
-            }
-        }
-    });
-</script>
-
-<div id="features" class="py-20 bg-base-100">
-    <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center mb-10">Why Wellness AI?</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="card bg-base-200 shadow-xl">
-                <div class="card-body items-center text-center">
-                    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-primary">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                        </svg>
-                    </div>
-                    <h2 class="card-title">Empathetic Support</h2>
-                    <p>Our AI is trained to listen with empathy and provide supportive, non-judgmental responses.</p>
+    <!-- Section 1: Hero Section (First Impression) -->
+    <div class="hero min-h-[calc(100vh-4rem)] bg-emerald-50 overflow-hidden relative">
+        <div class="hero-content flex-col lg:flex-row gap-12 z-10 w-full max-w-7xl px-4 py-12">
+            <!-- Kiri: Teks -->
+            <div class="flex-1 text-center lg:text-left">
+                <div class="inline-block px-3 py-1 mb-6 rounded-full bg-primary/10 text-primary text-sm font-semibold border border-primary/20 shadow-sm">
+                    Teman Curhat Berbasis AI
+                </div>
+                <h1 class="text-5xl lg:text-6xl font-extrabold text-primary mb-6 leading-tight">
+                    Teman Curhat Digital di Mana Saja, Kapan Saja.
+                </h1>
+                <p class="py-6 text-lg text-base-content/80 max-w-2xl mx-auto lg:mx-0">
+                    Sohaboth-AI adalah ruang aman 24/7 yang siap mendengarkan keluh kesahmu tanpa menghakimi. Didukung
+                    AI empatik untuk mendampingi setiap langkah emosionalmu.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                    <a href="/login" id="cta-btn"
+                        class="btn btn-primary btn-lg shadow-lg hover:scale-105 transition-transform duration-300">
+                        Mulai Curhat Gratis
+                    </a>
+                    <a href="#features" class="btn btn-ghost btn-lg text-primary hover:bg-emerald-100/50">
+                        Lihat Fitur
+                    </a>
                 </div>
             </div>
 
-            <div class="card bg-base-200 shadow-xl">
-                <div class="card-body items-center text-center">
-                    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-primary">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                        </svg>
-                    </div>
-                    <h2 class="card-title">Private & Secure</h2>
-                    <p>Your conversations are private. We prioritize your data security and anonymity.</p>
-                </div>
-            </div>
+            <!-- Kanan: Mockup Chat -->
+            <div class="flex-1 w-full max-w-md perspective-1000 hidden md:block">
+                <div
+                    class="mockup-phone border-primary/30 shadow-2xl transform hover:-translate-y-2 transition-transform duration-500">
+                    <div class="camera"></div>
+                    <div class="display">
+                        <div class="artboard artboard-demo phone-1 bg-base-100 justify-start pt-12 px-4 gap-4">
+                            <!-- Chat Header -->
+                            <div class="w-full flex items-center gap-3 border-b border-base-200 pb-3">
+                                <div class="avatar">
+                                    <div class="w-10 rounded-full bg-primary/20 p-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-primary">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-sm">Sohaboth-AI</h3>
+                                    <p class="text-xs text-success">Online</p>
+                                </div>
+                            </div>
 
-            <div class="card bg-base-200 shadow-xl">
-                <div class="card-body items-center text-center">
-                    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-primary">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+                            <!-- Chat Bubbles -->
+                            <div class="chat chat-start w-full">
+                                <div class="chat-bubble chat-bubble-ai text-sm shadow-sm">Halo! Aku Sohaboth-AI.
+                                    Bagaimana perasaanmu hari ini? Aku di sini untuk mendengarkan.</div>
+                            </div>
+                            <div class="chat chat-end w-full">
+                                <div class="chat-bubble chat-bubble-user text-sm shadow-sm">Aku sedang merasa lelah
+                                    sekali dengan pekerjaan hari ini...</div>
+                            </div>
+                            <div class="chat chat-start w-full">
+                                <div class="chat-bubble chat-bubble-ai text-sm shadow-sm">Wajar sekali merasa lelah
+                                    setelah hari yang panjang. Ingat, perasaanmu itu valid. Mau cerita apa yang
+                                    membuatmu paling lelah?</div>
+                            </div>
+
+                            <!-- Typing Indicator -->
+                            <div class="chat chat-end w-full opacity-50 mt-auto mb-4">
+                                <div class="text-xs flex gap-1 items-center justify-end pr-2">
+                                    <span>Ketik pesanmu...</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <h2 class="card-title">24/7 Availability</h2>
-                    <p>Need to talk at 3 AM? We're here. Access support whenever and wherever you are.</p>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Dynamic CTA update script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                const btn = document.getElementById('cta-btn');
+                const bottomBtn = document.getElementById('cta-bottom-btn');
+                if (btn) {
+                    btn.textContent = 'Buka Ruang Obrolan';
+                    btn.href = '/chat';
+                }
+                if (bottomBtn) {
+                    bottomBtn.textContent = 'Lanjut Curhat';
+                    bottomBtn.href = '/chat';
+                }
+            }
+        });
+    </script>
+
+    <!-- Section 2: Core Values & Features -->
+    <div id="features" class="py-24 bg-base-100 relative z-10 border-t border-base-200">
+        <div class="container mx-auto px-4 max-w-7xl">
+            <div class="text-center mb-16">
+                <h2 class="text-sm font-bold text-primary tracking-widest uppercase mb-2">Nilai Utama Kami</h2>
+                <h3 class="text-4xl font-bold">Mengapa Memilih Sohaboth-AI?</h3>
+                <p class="mt-4 text-base-content/70 max-w-2xl mx-auto">Kami merancang sistem ini untuk memprioritaskan
+                    keamanan emosional dan privasi data Anda di atas segalanya.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div
+                    class="card bg-base-100 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-base-200">
+                    <div class="card-body items-start">
+                        <div
+                            class="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-4 text-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="w-7 h-7">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                            </svg>
+                        </div>
+                        <h2 class="card-title text-xl mb-2">Pendengar yang Empatis</h2>
+                        <p class="text-base-content/70 text-sm leading-relaxed">AI dipersonalisasi khusus untuk
+                            memberikan respon hangat, mengerti konteks perasaan, bukan sekadar jawaban robotik.</p>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div
+                    class="card bg-base-100 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-base-200">
+                    <div class="card-body items-start">
+                        <div
+                            class="w-14 h-14 bg-secondary/10 rounded-2xl flex items-center justify-center mb-4 text-secondary">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="w-7 h-7">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
+                            </svg>
+                        </div>
+                        <h2 class="card-title text-xl mb-2">Didukung Pengetahuan (RAG)</h2>
+                        <p class="text-base-content/70 text-sm leading-relaxed">Jawaban didukung oleh basis pengetahuan
+                            terpercaya untuk memberikan informasi kesehatan mental yang relevan.</p>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div
+                    class="card bg-base-100 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-base-200">
+                    <div class="card-body items-start">
+                        <div
+                            class="w-14 h-14 bg-accent/10 rounded-2xl flex items-center justify-center mb-4 text-accent">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="w-7 h-7">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                            </svg>
+                        </div>
+                        <h2 class="card-title text-xl mb-2">Privasi & Keamanan Penuh</h2>
+                        <p class="text-base-content/70 text-sm leading-relaxed">Percakapan rahasia. Enkripsi JWT dan
+                            keamanan sesi menjamin data keluh kesah Anda tidak disebarluaskan.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 3: Ruang Aman untuk Setiap Emosi -->
+    <div class="py-20 bg-emerald-50 border-y border-emerald-100">
+        <div class="container mx-auto px-4 max-w-7xl">
+            <div class="text-center mb-16">
+                <h2 class="text-sm font-bold text-primary tracking-widest uppercase mb-2">Selalu Ada Untukmu</h2>
+                <h3 class="text-3xl md:text-4xl font-bold">Kapanpun Kamu Membutuhkan Kami</h3>
+                <p class="mt-4 text-base-content/70 max-w-2xl mx-auto">Kami mengerti bahwa emosi bisa datang kapan saja. Sohaboth-AI hadir menjadi ruang aman yang selalu tersedia di saat-saat kamu paling membutuhkannya.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Situation 1 -->
+                <div class="flex flex-col p-6 bg-base-100 rounded-2xl shadow-sm border border-base-200 hover:shadow-md hover:border-primary/30 transition-all">
+                    <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mb-6 text-2xl shadow-sm border border-indigo-100">
+                        🌙
+                    </div>
+                    <h4 class="text-xl font-bold mb-3">Malam yang Panjang</h4>
+                    <p class="text-base-content/70 text-sm flex-1 leading-relaxed">Saat pikiran berisik, overthinking melanda, dan butuh tempat menumpahkan beban pikiran sebelum mencoba untuk tidur.</p>
+                </div>
+
+                <!-- Situation 2 -->
+                <div class="flex flex-col p-6 bg-base-100 rounded-2xl shadow-sm border border-base-200 hover:shadow-md hover:border-primary/30 transition-all">
+                    <div class="w-12 h-12 bg-sky-50 text-sky-600 rounded-xl flex items-center justify-center mb-6 text-2xl shadow-sm border border-sky-100">
+                        🌧️
+                    </div>
+                    <h4 class="text-xl font-bold mb-3">Merasa Sepi & Sendiri</h4>
+                    <p class="text-base-content/70 text-sm flex-1 leading-relaxed">Saat merasa tidak ada yang benar-benar mengerti. Kami hadir untuk mendengarkan setiap keluh kesahmu tanpa menghakimi.</p>
+                </div>
+
+                <!-- Situation 3 -->
+                <div class="flex flex-col p-6 bg-base-100 rounded-2xl shadow-sm border border-base-200 hover:shadow-md hover:border-primary/30 transition-all">
+                    <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center mb-6 text-2xl shadow-sm border border-orange-100">
+                        🌪️
+                    </div>
+                    <h4 class="text-xl font-bold mb-3">Kecemasan Tiba-Tiba</h4>
+                    <p class="text-base-content/70 text-sm flex-1 leading-relaxed">Saat merasa kewalahan oleh keadaan. Mari kita atur napas bersama dan mengurai benang kusut di kepalamu secara perlahan.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 4: How It Works -->
+    <div class="py-24 bg-base-100 relative">
+        <div class="container mx-auto px-4 max-w-5xl text-center">
+            <h3 class="text-3xl font-bold mb-16">Langkah Mudah Memulai</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+                <!-- Connecting Line (Desktop only) -->
+                <div class="hidden md:block absolute top-[2.5rem] left-0 w-full h-0.5 bg-emerald-100 -z-10"></div>
+
+                <div class="flex flex-col items-center bg-base-100 p-4">
+                    <div
+                        class="w-20 h-20 rounded-full bg-primary text-primary-content font-bold text-3xl flex items-center justify-center mb-6 shadow-lg border-4 border-base-100">
+                        1</div>
+                    <h4 class="font-bold text-xl mb-2">Buat Akun</h4>
+                    <p class="text-base text-base-content/70">Daftarkan diri secara aman dalam hitungan detik.</p>
+                </div>
+
+                <div class="flex flex-col items-center bg-base-100 p-4">
+                    <div
+                        class="w-20 h-20 rounded-full bg-primary text-primary-content font-bold text-3xl flex items-center justify-center mb-6 shadow-lg border-4 border-base-100">
+                        2</div>
+                    <h4 class="font-bold text-xl mb-2">Mulai Sesi Baru</h4>
+                    <p class="text-base text-base-content/70">Buka ruang obrolan privat Anda sendiri.</p>
+                </div>
+
+                <div class="flex flex-col items-center bg-base-100 p-4">
+                    <div
+                        class="w-20 h-20 rounded-full bg-primary text-primary-content font-bold text-3xl flex items-center justify-center mb-6 shadow-lg border-4 border-base-100">
+                        3</div>
+                    <h4 class="font-bold text-xl mb-2">Bercerita Bebas</h4>
+                    <p class="text-base text-base-content/70">Utarakan isi hati Anda kapan pun diperlukan.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 5: Disclaimer -->
+    <div class="bg-amber-50 py-10 border-y border-amber-200">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <div
+                class="flex flex-col sm:flex-row gap-6 items-start bg-white p-6 rounded-2xl shadow-sm border border-amber-100">
+                <div class="text-amber-500 shrink-0 bg-amber-100 p-3 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-8 h-8">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <div>
+                    <h4 class="font-bold text-amber-900 mb-2 text-lg">Transparansi & Batasan AI</h4>
+                    <p class="text-sm text-amber-800 leading-relaxed">
+                        Sohaboth-AI dirancang sebagai pendamping emosional awal dan teman curhat digital. Aplikasi ini
+                        <strong>bukan</strong> pengganti psikolog, psikiater, atau diagnosis medis profesional. Jika
+                        Anda mengalami krisis mental hebat, depresi berat, atau pemikiran membahayakan diri, silakan
+                        hubungi layanan darurat medis terdekat atau layanan kesehatan mental profesional.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 6: Final CTA & Footer -->
+    <div class="py-24 bg-primary text-primary-content text-center">
+        <div class="container mx-auto px-4 max-w-3xl">
+            <h2 class="text-4xl lg:text-5xl font-bold mb-6">Siap Melepaskan Beban Pikiranmu?</h2>
+            <p class="text-primary-content/80 text-lg lg:text-xl mb-10 leading-relaxed">Ruang aman Anda sudah siap.
+                Mulai mengobrol dengan Sohaboth-AI sekarang, kapan saja, di mana saja.</p>
+            <a href="/login" id="cta-bottom-btn"
+                class="btn bg-base-100 text-primary hover:bg-base-200 border-none btn-lg shadow-xl hover:scale-105 transition-transform duration-300 px-8">
+                Mulai Obrolan Sekarang
+            </a>
+        </div>
+    </div>
+
+    <footer class="footer items-center p-6 bg-emerald-50 text-emerald-900 border-t border-emerald-100">
+        <aside class="items-center grid-flow-col gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-6 h-6 text-primary">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+            </svg>
+            <p class="font-medium">Copyright © 2026 - Sohaboth-AI. All right reserved.</p>
+        </aside>
+        <nav class="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
+            <div class="text-sm opacity-70">
+                Layanan Darurat Kemenkes RI: <strong>119 ext 8</strong>
+            </div>
+        </nav>
+    </footer>
+
 </div>
 {% endblock %}
