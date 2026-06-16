@@ -386,11 +386,137 @@ export async function confirmRunGenerativeEval(event) {
 
         if (res.ok) {
             showToast('Evaluation started in background. Refresh in a few moments.', 'success');
-            setTimeout(loadGenerativeEval, 5000);
+            setTimeout(() => {
+                loadGenerativeEval();
+                loadEvaluationDashboard();
+            }, 5000);
         } else {
             showToast('Failed to start evaluation', 'error');
         }
     } catch (e) {
         showToast('Error starting evaluation', 'error');
+    }
+}
+
+let evalChartInstance = null;
+
+export async function loadEvaluationDashboard() {
+    const tbody = document.getElementById('eval-dashboard-table-body');
+    const canvas = document.getElementById('evalRankingChart');
+    if (!tbody || !canvas) return;
+
+    try {
+        const res = await apiCall('/admin/evaluations/dashboard_stats');
+        if (!res.ok) throw new Error('Failed to fetch dashboard stats');
+
+        const stats = await res.json();
+        
+        // Update Table
+        tbody.innerHTML = '';
+        if (stats.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center">No evaluation data available.</td></tr>';
+            
+            if (evalChartInstance) {
+                evalChartInstance.destroy();
+                evalChartInstance = null;
+            }
+            return;
+        }
+
+        stats.forEach((s, idx) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="font-bold">${idx + 1}</td>
+                <td>${escapeHtml(s.model_name)}</td>
+                <td>${s.total_evaluations}</td>
+                <td class="font-bold text-primary">${s.overall_score.toFixed(4)}</td>
+                <td class="font-mono text-xs">${s.avg_bleu.toFixed(4)}</td>
+                <td class="font-mono text-xs">${s.avg_rouge_1.toFixed(4)}</td>
+                <td class="font-mono text-xs">${s.avg_rouge_2.toFixed(4)}</td>
+                <td class="font-mono text-xs">${s.avg_rouge_l.toFixed(4)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // Update Chart
+        const labels = stats.map(s => s.model_name);
+        const dataOverall = stats.map(s => s.overall_score);
+        const dataBleu = stats.map(s => s.avg_bleu);
+        const dataR1 = stats.map(s => s.avg_rouge_1);
+        const dataR2 = stats.map(s => s.avg_rouge_2);
+        const dataRL = stats.map(s => s.avg_rouge_l);
+
+        const ctx = canvas.getContext('2d');
+        if (evalChartInstance) {
+            evalChartInstance.destroy();
+        }
+
+        evalChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Overall Average',
+                        data: dataOverall,
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                        order: 1
+                    },
+                    {
+                        label: 'Avg BLEU',
+                        data: dataBleu,
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        borderWidth: 1,
+                        hidden: true
+                    },
+                    {
+                        label: 'Avg ROUGE-1',
+                        data: dataR1,
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderWidth: 1,
+                        hidden: true
+                    },
+                    {
+                        label: 'Avg ROUGE-2',
+                        data: dataR2,
+                        backgroundColor: 'rgba(255, 206, 86, 0.5)',
+                        borderWidth: 1,
+                        hidden: true
+                    },
+                    {
+                        label: 'Avg ROUGE-L',
+                        data: dataRL,
+                        backgroundColor: 'rgba(153, 102, 255, 0.5)',
+                        borderWidth: 1,
+                        hidden: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 1.0 // Since BLEU and ROUGE are usually between 0 and 1
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+
+    } catch (e) {
+        console.error('Error loading dashboard stats:', e);
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-error">Failed to load stats.</td></tr>';
     }
 }

@@ -40,6 +40,17 @@ def run_evaluation(
     background_tasks.add_task(run_evaluation_task, request.environment_id, request.limit)
     return {"message": "Evaluation started in background. Check logs or results endpoint for progress."}
 
+@router.get("/dashboard_stats", response_model=List[dict])
+def get_dashboard_stats(
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(get_current_admin)
+):
+    """
+    Get aggregated evaluation stats for the dashboard chart.
+    """
+    service = EvaluationService(db)
+    return service.get_dashboard_stats()
+
 @router.get("/results_generative", response_model=List[EvaluationResultResponse])
 def get_all_results_generative(
     page: int = 1,

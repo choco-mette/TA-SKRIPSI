@@ -33,6 +33,7 @@ window.runGenerativeEval = Evaluation.runGenerativeEval;
 window.confirmRunGenerativeEval = Evaluation.confirmRunGenerativeEval;
 window.loadGenerativeEval = Evaluation.loadGenerativeEval;
 window.viewEvalDetail = Evaluation.viewEvalDetail;
+window.loadEvaluationDashboard = Evaluation.loadEvaluationDashboard;
 
 // Navigation & Initialization
 
@@ -116,6 +117,7 @@ async function refreshAll() {
     await Knowledge.loadKnowledge();
     await Evaluation.loadQuestions();
     await Evaluation.loadGenerativeEval();
+    await Evaluation.loadEvaluationDashboard();
 }
 
 async function nextPage(type) {
@@ -139,6 +141,7 @@ async function reloadByType(type) {
     if (type === 'knowledge') await Knowledge.loadKnowledge();
     if (type === 'questions') await Evaluation.loadQuestions();
     if (type === 'generative') await Evaluation.loadGenerativeEval();
+    if (type === 'eval-dashboard') await Evaluation.loadEvaluationDashboard();
 }
 
 // Global Auth Helper (assuming isAuthenticated is global from http.js, but if not:)

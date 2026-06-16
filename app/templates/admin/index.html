@@ -241,6 +241,45 @@
             </div>
         </div>
 
+        <!-- Evaluation: Dashboard Section -->
+        <div id="section-eval-dashboard" class="admin-section hidden">
+             <div class="flex justify-between mb-4">
+                <h2 class="text-2xl font-bold">Evaluation Dashboard</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 mb-8">
+                <div class="card bg-base-100 shadow-xl border border-base-200">
+                    <div class="card-body">
+                        <h2 class="card-title text-lg">LLM Models Ranking (Average Score)</h2>
+                        <div class="w-full h-96 relative">
+                            <canvas id="evalRankingChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model Ranking Table -->
+            <div class="overflow-x-auto">
+                <table class="table border border-base-200 w-full table-xs">
+                    <thead class="bg-base-200">
+                        <tr>
+                            <th>Rank</th>
+                            <th>Model Name</th>
+                            <th>Total Evaluations</th>
+                            <th>Overall Average</th>
+                            <th>Avg BLEU</th>
+                            <th>Avg ROUGE-1</th>
+                            <th>Avg ROUGE-2</th>
+                            <th>Avg ROUGE-L</th>
+                        </tr>
+                    </thead>
+                    <tbody id="eval-dashboard-table-body">
+                         <!-- JS injected -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- Evaluation: Generative Eval Section -->
         <div id="section-generative-eval" class="admin-section hidden">
              <div class="flex justify-between mb-4 items-end">
@@ -350,6 +389,7 @@
             Evaluation
           </summary>
           <ul>
+            <li><a onclick="showSection('eval-dashboard')" id="nav-eval-dashboard">Dashboard</a></li>
             <li><a onclick="showSection('questions')" id="nav-questions">Question</a></li>
             <li><a onclick="showSection('generative-eval')" id="nav-generative-eval">Generative Eval</a></li>
           </ul>

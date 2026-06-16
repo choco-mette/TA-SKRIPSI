@@ -310,3 +310,41 @@ class EvaluationService:
             r_dict['environment_name'] = e_name 
             response.append(r_dict)
         return response
+
+    def get_dashboard_stats(self) -> List[Dict[str, Any]]:
+        results = self.db.query(
+            EnvironmentModel.id.label("environment_id"),
+            EnvironmentModel.models_name.label("model_name"),
+            func.count(RagEvaluationResult.id).label("total_evaluations"),
+            func.avg(RagEvaluationResult.bleu_score).label("avg_bleu"),
+            func.avg(RagEvaluationResult.rouge_1).label("avg_rouge_1"),
+            func.avg(RagEvaluationResult.rouge_2).label("avg_rouge_2"),
+            func.avg(RagEvaluationResult.rouge_l).label("avg_rouge_l")
+        ).join(
+            RagEvaluationResult, EnvironmentModel.id == RagEvaluationResult.environment_id
+        ).group_by(
+            EnvironmentModel.id, EnvironmentModel.models_name
+        ).all()
+
+        stats = []
+        for r in results:
+            avg_bleu = r.avg_bleu or 0.0
+            avg_r1 = r.avg_rouge_1 or 0.0
+            avg_r2 = r.avg_rouge_2 or 0.0
+            avg_rl = r.avg_rouge_l or 0.0
+            overall_score = (avg_bleu + avg_r1 + avg_r2 + avg_rl) / 4.0
+
+            stats.append({
+                "environment_id": r.environment_id,
+                "model_name": r.model_name or f"Model-{r.environment_id}",
+                "total_evaluations": r.total_evaluations,
+                "avg_bleu": avg_bleu,
+                "avg_rouge_1": avg_r1,
+                "avg_rouge_2": avg_r2,
+                "avg_rouge_l": avg_rl,
+                "overall_score": overall_score
+            })
+        
+        # Sort by overall score descending
+        stats.sort(key=lambda x: x["overall_score"], reverse=True)
+        return stats
