@@ -271,7 +271,7 @@ function appendMessage(msg) {
                 </div>
             </div>
             <div class="chat-header opacity-50 text-xs mb-1">
-                ${isBot ? 'Wellness Assistant' : (currentUser ? currentUser.username : 'You')}
+                ${isBot ? 'Sohaboth-AI' : (currentUser ? currentUser.username : 'You')}
             </div>
             <div class="chat-bubble ${bubbleColor} ${whitespaceClass}">${messageHtml}</div>
         </div>
