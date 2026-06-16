@@ -31,6 +31,7 @@ class AuthService:
             password_hash=security.hash_password(data.password),
             full_name=data.full_name,
             date_of_birth=data.date_of_birth,
+            gender=data.gender,
             role="user" 
         )
 

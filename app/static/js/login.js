@@ -34,7 +34,7 @@ async function handleLogin(event) {
     const password = passwordInput.value;
     
     // Show loading state
-    loginBtn.innerHTML = '<span class="loading loading-spinner"></span> Logging in...';
+    loginBtn.innerHTML = '<span class="loading loading-spinner"></span> Masuk...';
     loginBtn.setAttribute('disabled', 'true');
     
     try {
@@ -53,7 +53,7 @@ async function handleLogin(event) {
                 localStorage.setItem('token', token);
                 localStorage.setItem('token_type', tokenType);
                 
-                showToast('Login successful! Redirecting...', 'success');
+                showToast('Berhasil masuk! Mengalihkan...', 'success');
 
                 // Check user role for redirect
                 try {
@@ -84,13 +84,13 @@ async function handleLogin(event) {
                 }
                 
             } else {
-                showToast('Token missing in response', 'error');
+                showToast('Token tidak ditemukan dalam respons', 'error');
                 loginBtn.innerHTML = originalBtnText;
                 loginBtn.removeAttribute('disabled');
             }
         } else {
             // handle errors
-            let errorMsg = 'Login failed';
+            let errorMsg = 'Gagal masuk';
             if (response) {
                 try {
                     const errorData = await response.json();
@@ -104,7 +104,7 @@ async function handleLogin(event) {
         }
     } catch (error) {
         console.error('Login error:', error);
-        showToast('An error occurred. Check console.', 'error');
+        showToast('Terjadi kesalahan. Periksa konsol.', 'error');
         loginBtn.innerHTML = originalBtnText;
         loginBtn.removeAttribute('disabled');
     }

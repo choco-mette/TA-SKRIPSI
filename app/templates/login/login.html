@@ -6,32 +6,32 @@
 <div class="flex items-center justify-center min-h-[calc(100dvh-4rem)] p-4">
     <div class="card w-full max-w-sm bg-base-100 shadow-xl border border-base-200">
         <div class="card-body">
-            <h2 class="card-title justify-center text-2xl font-bold mb-4 text-primary">Welcome Back</h2>
-            <p class="text-center text-sm text-base-content/70 mb-4">Please login to your account</p>
+            <h2 class="card-title justify-center text-2xl font-bold mb-4 text-primary">Selamat Datang Kembali</h2>
+            <p class="text-center text-sm text-base-content/70 mb-4">Silakan masuk ke akun Anda</p>
             
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="form-control w-full">
                     <label class="label">
                         <span class="label-text">Email</span>
                     </label>
-                    <input type="email" id="email" placeholder="name@example.com" class="input input-bordered w-full" required />
+                    <input type="email" id="email" placeholder="nama@contoh.com" class="input input-bordered w-full" required />
                 </div>
                 
                 <div class="form-control w-full mt-2">
                     <label class="label">
-                        <span class="label-text">Password</span>
+                        <span class="label-text">Kata Sandi</span>
                     </label>
-                    <input type="password" id="password" placeholder="Enter password" class="input input-bordered w-full" required />
+                    <input type="password" id="password" placeholder="Masukkan kata sandi" class="input input-bordered w-full" required />
                 </div>
                 
                 <div class="card-actions justify-center mt-6">
                     <button type="submit" class="btn btn-primary w-full" id="loginBtn">
-                        Login
+                        Masuk
                     </button>
                 </div>
 
                 <div class="text-center mt-4 text-sm">
-                    Don't have an account? <a href="/register" class="link link-primary">Register</a>
+                    Belum punya akun? <a href="/register" class="link link-primary">Daftar</a>
                 </div>
             </form>
         </div>

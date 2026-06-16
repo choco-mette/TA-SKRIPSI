@@ -2,8 +2,8 @@ async function handleRegister(event) {
     event.preventDefault();
     
     // Get Elements
-    const fullNameInput = document.getElementById('full_name');
-    const usernameInput = document.getElementById('username');
+    const firstNameInput = document.getElementById('first_name');
+    const lastNameInput = document.getElementById('last_name');
     const emailInput = document.getElementById('email');
     const dobInput = document.getElementById('date_of_birth');
     const genderInput = document.getElementById('gender');
@@ -13,8 +13,8 @@ async function handleRegister(event) {
     const originalBtnText = registerBtn.innerHTML;
     
     // Get Values
-    const full_name = fullNameInput.value;
-    const username = usernameInput.value;
+    const first_name = firstNameInput.value;
+    const last_name = lastNameInput.value;
     const email = emailInput.value;
     const date_of_birth = dobInput.value;
     const gender = genderInput.value;
@@ -22,14 +22,14 @@ async function handleRegister(event) {
     
     // Validation
     if(password.length < 6) {
-        showToast("Password must be at least 6 characters long.", "warning");
+        showToast("Kata sandi minimal 6 karakter.", "warning");
         return;
     }
 
     // Prepare Payload
     const payload = {
-        full_name,
-        username,
+        full_name: `${first_name} ${last_name}`.trim(),
+        username: last_name,
         email,
         date_of_birth,
         gender,
@@ -37,7 +37,7 @@ async function handleRegister(event) {
     };
 
     // Show loading state
-    registerBtn.innerHTML = '<span class="loading loading-spinner"></span> Registering...';
+    registerBtn.innerHTML = '<span class="loading loading-spinner"></span> Mendaftar...';
     registerBtn.setAttribute('disabled', 'true');
     
     try {
@@ -47,8 +47,8 @@ async function handleRegister(event) {
             // Success
             await Swal.fire({
                 icon: 'success',
-                title: 'Registration Successful',
-                text: 'Please login to continue.',
+                title: 'Pendaftaran Berhasil',
+                text: 'Silakan masuk untuk melanjutkan.',
                 timer: 2000,
                 showConfirmButton: false
             });
@@ -56,7 +56,7 @@ async function handleRegister(event) {
         } else {
             // Handle specific errors from API if possible
             const errorData = await response.json().catch(() => ({}));
-            let errorMsg = "Registration failed.";
+            let errorMsg = "Pendaftaran gagal.";
             if (errorData.detail) {
                 if (Array.isArray(errorData.detail)) {
                     errorMsg = errorData.detail.map(e => e.msg).join('\n');
@@ -68,7 +68,7 @@ async function handleRegister(event) {
         }
     } catch (error) {
         console.error("Registration error:", error);
-        showToast("An error occurred during registration. Please try again.", "error");
+        showToast("Terjadi kesalahan saat pendaftaran. Silakan coba lagi.", "error");
     } finally {
         // Reset button
         registerBtn.innerHTML = originalBtnText;
