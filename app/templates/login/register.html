@@ -4,32 +4,35 @@
 
 {% block content %}
 <div class="flex items-center justify-center min-h-[calc(100dvh-4rem)] p-4">
-    <div class="card w-full max-w-3xl bg-base-100 shadow-xl border border-base-200">
+    <div class="card w-full max-w-lg bg-base-100 shadow-xl border border-base-200">
         <div class="card-body">
             <h2 class="card-title justify-center text-2xl font-bold mb-4 text-primary">Buat Akun</h2>
-            <p class="text-center text-sm text-base-content/70 mb-4">Bergabunglah dengan kami hari ini</p>
-            
+            <p class="text-center text-sm text-base-content/70 mb-4">Bergabunglah dengan kami</p>
+
             <form id="registerForm" onsubmit="handleRegister(event)">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="form-control w-full">
                         <label class="label">
                             <span class="label-text">Nama Depan</span>
                         </label>
-                        <input type="text" id="first_name" placeholder="Misal: Budi" class="input input-bordered w-full" required />
+                        <input type="text" id="first_name" placeholder="Misal: Budi" class="input input-bordered w-full"
+                            required />
                     </div>
 
                     <div class="form-control w-full">
                         <label class="label">
                             <span class="label-text">Nama Belakang</span>
                         </label>
-                        <input type="text" id="last_name" placeholder="Misal: Santoso" class="input input-bordered w-full" minlength="3" required />
+                        <input type="text" id="last_name" placeholder="Misal: Santoso"
+                            class="input input-bordered w-full" minlength="3" required />
                     </div>
-                    
+
                     <div class="form-control w-full md:col-span-2">
                         <label class="label">
                             <span class="label-text">Email</span>
                         </label>
-                        <input type="email" id="email" placeholder="nama@contoh.com" class="input input-bordered w-full" required />
+                        <input type="email" id="email" placeholder="nama@contoh.com" class="input input-bordered w-full"
+                            required />
                     </div>
 
                     <div class="form-control w-full">
@@ -49,21 +52,22 @@
                             <option value="perempuan">Perempuan</option>
                         </select>
                     </div>
-                    
+
                     <div class="form-control w-full md:col-span-2">
                         <label class="label">
                             <span class="label-text">Kata Sandi</span>
                         </label>
-                        <input type="password" id="password" placeholder="Minimal 6 karakter" class="input input-bordered w-full" minlength="6" required />
+                        <input type="password" id="password" placeholder="Minimal 6 karakter"
+                            class="input input-bordered w-full" minlength="6" required />
                     </div>
                 </div>
-                
+
                 <div class="card-actions justify-center mt-6">
                     <button type="submit" class="btn btn-primary w-full md:w-1/2" id="registerBtn">
                         Daftar
                     </button>
                 </div>
-                
+
                 <div class="text-center mt-4 text-sm">
                     Sudah punya akun? <a href="/login" class="link link-primary">Masuk</a>
                 </div>

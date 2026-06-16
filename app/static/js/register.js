@@ -21,6 +21,11 @@ async function handleRegister(event) {
     const password = passwordInput.value;
     
     // Validation
+    if (!first_name || !last_name || !email || !date_of_birth || !gender || !password) {
+        showToast("Harap isi semua kolom, termasuk Jenis Kelamin.", "warning");
+        return;
+    }
+
     if(password.length < 6) {
         showToast("Kata sandi minimal 6 karakter.", "warning");
         return;
